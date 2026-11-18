@@ -16,7 +16,7 @@ export const NIVELES: { id: Nivel; nombre: string; corto: string; descripcion: s
     id: "PY",
     nombre: "Patrón de Yate",
     corto: "Patrón de Yate",
-    descripcion: "Estima, mareas y loxodrómica (próximamente)",
+    descripcion: "Mareas, estima, loxodrómica y situación, además de todo el PER",
   },
   {
     id: "CY",
@@ -35,6 +35,7 @@ export interface Modulo {
 }
 
 export const MODULOS: Modulo[] = [
+  { id: "examen", titulo: "Modo examen", resumen: "Ejercicios tipo test con la solución", nivel: "PER", disponible: true },
   { id: "rumbo-a-dar", titulo: "Rumbo a dar al timonel", resumen: "Problema completo: corriente, viento y aguja", nivel: "PER", disponible: true },
   { id: "ct", titulo: "Corrección total", resumen: "Ct = dm + Δ", nivel: "PER", disponible: true },
   { id: "rumbos", titulo: "Rumbos y demoras", resumen: "De aguja a verdadero y al revés", nivel: "PER", disponible: true },
@@ -45,9 +46,11 @@ export const MODULOS: Modulo[] = [
   { id: "corriente", titulo: "Corriente", resumen: "Rumbo y velocidad efectivos", nivel: "PER", disponible: true },
   { id: "conversiones", titulo: "Conversiones", resumen: "Ángulos, cuadrantales y unidades", nivel: "PER", disponible: true },
 
-  { id: "estima", titulo: "Situación por estima", resumen: "Posición tras navegar un rumbo y distancia", nivel: "PY", disponible: false },
-  { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: false },
-  { id: "mareas", titulo: "Mareas", resumen: "Hora y altura de la marea", nivel: "PY", disponible: false },
+  { id: "mareas", titulo: "Mareas", resumen: "Sonda a una hora y hora para una sonda", nivel: "PY", disponible: true },
+  { id: "estima", titulo: "Situación por estima", resumen: "Uno o varios rumbos, con viento y corriente", nivel: "PY", disponible: true },
+  { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: true },
+  { id: "situacion", titulo: "Situación por demoras", resumen: "Dos demoras, traslado, demora y distancia", nivel: "PY", disponible: true },
+  { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
   { id: "ortodromica", titulo: "Ortodrómica", resumen: "Navegación por círculo máximo", nivel: "CY", disponible: false },
   { id: "recta-altura", titulo: "Recta de altura", resumen: "Situación por observación de astros", nivel: "CY", disponible: false },

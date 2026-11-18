@@ -34,3 +34,13 @@ export function req<T>(texto: string, lector: (t: string) => T): T {
 export function opt<T>(texto: string, lector: (t: string) => T): T | undefined {
   return texto.trim() === "" ? undefined : lector(texto);
 }
+
+import { leerLatitud, leerLongitud, type Posicion } from "@/lib/nucleo/coordenadas";
+
+/** Lee una posición del formulario; si falta algún dato, el cálculo queda en espera. */
+export function reqPosicion(v: { lat: string; sLat: 1 | -1; lon: string; sLon: 1 | -1 }): Posicion {
+  return {
+    lat: req(v.lat, (t) => leerLatitud(t, v.sLat)),
+    lon: req(v.lon, (t) => leerLongitud(t, v.sLon)),
+  };
+}

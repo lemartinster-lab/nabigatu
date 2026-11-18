@@ -25,6 +25,7 @@ export function Campo({ etiqueta, valor, onChange, placeholder, ayuda, unidad, m
           inputMode={modo}
           autoComplete="off"
           spellCheck={false}
+          aria-label={etiqueta}
         />
         {unidad && <span className="flex items-center bg-slate-50 px-3 text-sm text-slate-500">{unidad}</span>}
       </div>
@@ -177,5 +178,56 @@ export function Resultado({ salida }: { salida: Salida }) {
         </ol>
       </details>
     </div>
+  );
+}
+
+/** Posición: latitud con N/S y longitud con E/W. */
+export interface ValorPosicion {
+  lat: string;
+  sLat: 1 | -1;
+  lon: string;
+  sLon: 1 | -1;
+}
+
+export const POSICION_VACIA: ValorPosicion = { lat: "", sLat: 1, lon: "", sLon: -1 };
+
+export function CampoPosicion({
+  etiqueta,
+  valor,
+  onChange,
+  ayuda,
+}: {
+  etiqueta: string;
+  valor: ValorPosicion;
+  onChange: (v: ValorPosicion) => void;
+  ayuda?: string;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-2 rounded-2xl bg-white p-3 ring-1 ring-slate-200">
+      <legend className="px-1 text-sm font-semibold text-slate-700">{etiqueta}</legend>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <CampoConSigno
+          etiqueta="Latitud"
+          valor={valor.lat}
+          onChange={(lat) => onChange({ ...valor, lat })}
+          signo={valor.sLat}
+          onSigno={(sLat) => onChange({ ...valor, sLat })}
+          positivo="N"
+          negativo="S"
+          placeholder="36°00,0'"
+        />
+        <CampoConSigno
+          etiqueta="Longitud"
+          valor={valor.lon}
+          onChange={(lon) => onChange({ ...valor, lon })}
+          signo={valor.sLon}
+          onSigno={(sLon) => onChange({ ...valor, sLon })}
+          positivo="E"
+          negativo="W"
+          placeholder="005°10,0'"
+        />
+      </div>
+      {ayuda && <span className="text-xs text-slate-500">{ayuda}</span>}
+    </fieldset>
   );
 }

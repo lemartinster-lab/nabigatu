@@ -7,8 +7,13 @@ import { Declinacion } from "./per/Declinacion";
 import { DistanciaVelocidad } from "./per/DistanciaVelocidad";
 import { Corriente, RumboADar, Viento } from "./per/VientoCorriente";
 import { Conversiones } from "./per/Conversiones";
+import { Mareas } from "./py/Mareas";
+import { Estima, LlegarAHora, Loxodromica } from "./py/Navegacion";
+import { Situacion } from "./py/Situacion";
+import { ModoExamen } from "./examen/ModoExamen";
 
-const COMPONENTES: Record<string, ComponentType> = {
+const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
+  examen: ModoExamen,
   "rumbo-a-dar": RumboADar,
   ct: CorreccionTotal,
   rumbos: RumbosDemoras,
@@ -18,6 +23,11 @@ const COMPONENTES: Record<string, ComponentType> = {
   viento: Viento,
   corriente: Corriente,
   conversiones: Conversiones,
+  mareas: Mareas,
+  estima: Estima,
+  loxodromica: Loxodromica,
+  situacion: Situacion,
+  llegada: LlegarAHora,
 };
 
 const CLAVE = "nabigatu:v1";
@@ -65,7 +75,7 @@ export function App() {
             <Rosa />
             <div>
               <div className="text-lg font-bold leading-tight text-sky-950">Nabigatu</div>
-              <div className="text-xs text-slate-500">Calculadora de navegación</div>
+              <div className="text-xs text-slate-500">Navegación y examen</div>
             </div>
           </button>
           <label className="flex flex-col items-end text-xs text-slate-500">
@@ -112,9 +122,9 @@ export function App() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold">{m.titulo}</span>
-                    {m.nivel !== "PER" && (
+                    {(m.nivel !== "PER" || m.id === "examen") && (
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${activo === m.id ? "bg-sky-700" : "bg-slate-200 text-slate-500"}`}>
-                        {m.disponible ? NOMBRE_NIVEL[m.nivel] : "Próximamente"}
+                        {m.id === "examen" ? "Practicar" : m.disponible ? NOMBRE_NIVEL[m.nivel] : "Próximamente"}
                       </span>
                     )}
                   </div>
@@ -135,7 +145,7 @@ export function App() {
                 <h1 className="text-2xl font-bold text-sky-950">{modulo.titulo}</h1>
                 <p className="text-slate-600">{modulo.resumen}</p>
               </div>
-              <Componente key={modulo.id} />
+              <Componente key={`${modulo.id}-${nivel}`} nivel={nivel} />
             </article>
           ) : (
             <Bienvenida />

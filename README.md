@@ -20,13 +20,25 @@
 
 **Criterio de signos:** Este positivo, Oeste negativo. Abatimiento positivo con viento por babor y negativo por estribor. Rc es el rumbo **hacia** el que va la corriente.
 
+## Fase 2: Patrón de Yate (disponible)
+
+| Módulo | Qué calcula |
+|--------|-------------|
+| Mareas | Sonda a una hora oficial y hora para una sonda, por el método del coseno, con adelanto horario |
+| Situación por estima | Uno o varios rumbos, con rumbos de aguja, abatimiento y corriente (latitud media) |
+| Loxodrómica | Rumbo directo y distancia entre dos posiciones, también cruzando el meridiano de 180° |
+| Situación por demoras | Dos demoras simultáneas, no simultáneas (traslado), demora y distancia, y rumbo para pasar a X millas |
+| Llegar a una hora | Rumbo de aguja y velocidad para estar en un punto a una hora fijada con corriente |
+
+Los métodos de mareas y loxodrómica se han contrastado con un examen oficial de Patrón de Yate (3.ª convocatoria de 2020, Junta de Andalucía): los tests reproducen las respuestas correctas de esos ejercicios.
+
+## Modo examen
+
+Ejercicios tipo test generados al azar, con cuatro opciones, para el PER y el Patrón de Yate. Las opciones incorrectas corresponden a los errores típicos (signo de la Ct, olvidar el adelanto, regla de los doceavos, no aplicar cos lm…) y cada una explica su error. Los ejercicios que necesitan la carta del Estrecho no se generan.
+
 ## Próximas fases
 
-- **Patrón de Yate:** situación por estima, loxodrómica y mareas.
 - **Capitán de Yate:** ortodrómica, recta de altura y meridiana.
-- **Modo estudio:** ejercicios tipo examen con la solución.
-
-El selector «Mi titulación» muestra los módulos del nivel elegido y de los inferiores.
 
 ## Estructura
 
@@ -34,8 +46,11 @@ El selector «Mi titulación» muestra los módulos del nivel elegido y de los i
 |------|-----------|
 | `lib/nucleo/` | Común a todos los niveles: ángulos, vectores, unidades y tiempo |
 | `lib/per/` | Cálculos del PER |
+| `lib/py/` | Cálculos del Patrón de Yate |
+| `lib/examen/` | Generador de ejercicios tipo test |
 | `lib/modulos.ts` | Catálogo de módulos por titulación |
-| `components/per/` | Formularios de cada módulo |
+| `components/per/`, `components/py/` | Formularios de cada módulo |
+| `components/examen/` | Modo examen |
 | `components/campos.tsx` | Campos, selectores y presentación de resultados |
 | `lib/**/*.test.ts` | Tests con ejercicios tipo examen |
 
