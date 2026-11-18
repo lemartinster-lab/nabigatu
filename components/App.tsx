@@ -14,6 +14,7 @@ import { ModoExamen } from "./examen/ModoExamen";
 import { Alturas, Horas, HorarioAstro, Meridiana, Ortodromica, Polar, RectaAltura } from "./cy/Astronomia";
 import { AlmanaqueCalculado } from "./cy/AlmanaqueCalculado";
 import { MisFaros } from "./MisFaros";
+import { AlcanceLicencia, Autonomia, HorasDeLuz, NormasMoto } from "./ln/Moto";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   examen: ModoExamen,
@@ -40,11 +41,15 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "recta-altura": RectaAltura,
   almanaque: AlmanaqueCalculado,
   faros: MisFaros,
+  luz: HorasDeLuz,
+  alcance: AlcanceLicencia,
+  autonomia: Autonomia,
+  "normas-moto": NormasMoto,
 };
 
 const CLAVE = "nabigatu:v1";
 
-const NOMBRE_NIVEL: Record<Nivel, string> = { PER: "PER", PY: "Patrón de Yate", CY: "Capitán de Yate" };
+const NOMBRE_NIVEL: Record<Nivel, string> = { LN: "Titulín", PER: "PER", PY: "Patrón de Yate", CY: "Capitán de Yate" };
 
 export function App() {
   const [nivel, setNivel] = useState<Nivel>("PER");
@@ -134,7 +139,7 @@ export function App() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold">{m.titulo}</span>
-                    {(m.nivel !== "PER" || m.id === "examen") && (
+                    {(m.nivel !== nivel || m.id === "examen") && (
                       <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${activo === m.id ? "bg-sky-700" : "bg-slate-200 text-slate-500"}`}>
                         {m.id === "examen" ? "Practicar" : m.disponible ? NOMBRE_NIVEL[m.nivel] : "Próximamente"}
                       </span>
