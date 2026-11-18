@@ -22,6 +22,17 @@ export function MisFaros() {
     if (e instanceof EntradaInvalida) errorPosicion = e.message;
   }
   const puedeGuardar = nombre.trim() !== "" && posicion !== null;
+  const empezado = nombre.trim() !== "" || pos.lat.trim() !== "" || pos.lon.trim() !== "";
+  const faltan = [
+    nombre.trim() === "" && "el nombre",
+    pos.lat.trim() === "" && "la latitud",
+    pos.lon.trim() === "" && "la longitud",
+  ].filter(Boolean) as string[];
+  const aviso =
+    errorPosicion ??
+    (empezado && faltan.length > 0
+      ? `Para añadirlo falta ${faltan.length === 1 ? faltan[0] : `${faltan.slice(0, -1).join(", ")} y ${faltan.at(-1)}`}.`
+      : null);
 
   const guardar = () => {
     if (!puedeGuardar || !posicion) return;
@@ -57,7 +68,8 @@ export function MisFaros() {
   return (
     <>
       <p className="text-sm text-slate-600">
-        Mide en tu carta la situación de cada faro y guárdala aquí una sola vez. Después podrás elegirlo en cualquier campo
+        Mide en tu carta la situación de cada faro y guárdala aquí una sola vez. Puedes escribirla como en la carta
+        («36°06,6' N», «005°20,6' W») o elegir N/S y E/W con los botones. Después podrás elegirlo en cualquier campo
         de posición («Situación por demoras», «Loxodrómica»…). Se guardan en este navegador.
       </p>
       <p className="text-xs text-slate-500">
@@ -84,7 +96,11 @@ export function MisFaros() {
           </datalist>
         </label>
         <CampoPosicion etiqueta="Situación medida en la carta" valor={pos} onChange={setPos} conFaros={false} />
-        {errorPosicion && <p className="text-sm text-rose-700">{errorPosicion}</p>}
+        {aviso && (
+          <p className={`text-sm ${errorPosicion ? "text-rose-700" : "text-slate-600"}`} aria-live="polite">
+            {aviso}
+          </p>
+        )}
         <div className="flex gap-2">
           <button
             type="button"

@@ -119,8 +119,8 @@ function PaginaDelDia() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Campo etiqueta="Fecha" valor={fecha} onChange={setFecha} placeholder="18/11/2026" modo="text" />
         <div className="hidden sm:block" />
-        <CampoConSigno etiqueta="Latitud (opcional)" valor={lat} onChange={setLat} signo={sLat} onSigno={setSLat} positivo="N" negativo="S" placeholder="28°28'" ayuda="Salida, puesta y crepúsculos en tu situación." />
-        <CampoConSigno etiqueta="Longitud (opcional)" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="16°15'" ayuda="Sin longitud, horas para el meridiano de Greenwich." />
+        <CampoConSigno tipo="lat" etiqueta="Latitud (opcional)" valor={lat} onChange={setLat} signo={sLat} onSigno={setSLat} positivo="N" negativo="S" placeholder="28°28'" ayuda="Salida, puesta y crepúsculos en tu situación." />
+        <CampoConSigno tipo="lon" etiqueta="Longitud (opcional)" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="16°15'" ayuda="Sin longitud, horas para el meridiano de Greenwich." />
       </div>
       {error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-800 ring-1 ring-red-200">{error}</p>}
       {pagina && (
@@ -297,8 +297,8 @@ function Instante() {
             </optgroup>
           </select>
         </label>
-        <CampoConSigno etiqueta="Longitud (opcional)" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="35°27'" ayuda="Para el horario del lugar." />
-        <CampoConSigno etiqueta="Latitud de estima (opcional)" valor={lat} onChange={setLat} signo={sLat} onSigno={setSLat} positivo="N" negativo="S" placeholder="19°48'" ayuda="Con la longitud, da el azimut y la altura estimada." />
+        <CampoConSigno tipo="lon" etiqueta="Longitud (opcional)" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="35°27'" ayuda="Para el horario del lugar." />
+        <CampoConSigno tipo="lat" etiqueta="Latitud de estima (opcional)" valor={lat} onChange={setLat} signo={sLat} onSigno={setSLat} positivo="N" negativo="S" placeholder="19°48'" ayuda="Con la longitud, da el azimut y la altura estimada." />
       </div>
       <Resultado salida={salida} />
     </>

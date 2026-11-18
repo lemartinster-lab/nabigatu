@@ -176,3 +176,48 @@ describe("unidades", () => {
     expect(() => leerHora("25:00")).toThrow();
   });
 });
+
+import { leerLatitud, leerLongitud, separarHemisferio } from "./coordenadas";
+
+// Formatos con los que se escriben las coordenadas en la carta y en los enunciados de examen.
+// Fallo detectado en «Mis faros» el 18-11-2026: «36°06,6' N» no se aceptaba.
+describe("coordenadas escritas como en la carta", () => {
+  const europaLat = 36 + 6.6 / 60;
+  const europaLon = -(5 + 20.6 / 60);
+
+  it("con la letra detrás, delante o pegada", () => {
+    for (const t of ["36°06,6'N", "36º 06.6' N", "36 06,6 N", "N 36°06,6'", "n36°06,6'"]) {
+      expect(leerLatitud(t, -1)).toBeCloseTo(europaLat, 9); // la letra manda sobre el botón
+    }
+    for (const t of ["005°20,6'W", "5º 20.6' W", "5 20,6 W", "W 005°20,6'", "5°20,6'O", "5°20,6' o"]) {
+      expect(leerLongitud(t, 1)).toBeCloseTo(europaLon, 9);
+    }
+  });
+
+  it("sin letra manda el botón, como antes", () => {
+    expect(leerLatitud("36°06,6'", -1)).toBeCloseTo(-europaLat, 9);
+    expect(leerLongitud("005°20,6'", -1)).toBeCloseTo(europaLon, 9);
+    expect(leerLatitud("36,11", 1)).toBeCloseTo(36.11, 9);
+  });
+
+  it("con segundos", () => {
+    expect(leerAngulo("36°06'36\"")).toBeCloseTo(europaLat, 9);
+    expect(leerAngulo("5°20′36″")).toBeCloseTo(5 + 20.6 / 60, 9);
+    expect(leerAngulo("36 6 36")).toBeCloseTo(europaLat, 9);
+    expect(leerLatitud("36°06'36\" N", -1)).toBeCloseTo(europaLat, 9);
+    expect(() => leerAngulo("36°06'75\"")).toThrow(/segundos/);
+    expect(() => leerAngulo("36°06,5'30\"")).toThrow(/minutos deben ser enteros/);
+  });
+
+  it("separa la letra y dice qué signo indica", () => {
+    expect(separarHemisferio("36°06,6' S", "lat")).toEqual({ numero: "36°06,6'", signo: -1 });
+    expect(separarHemisferio("E 3°", "lon")).toEqual({ numero: "3°", signo: 1 });
+    expect(separarHemisferio("36°06,6'", "lat")).toEqual({ numero: "36°06,6'" });
+  });
+
+  it("letra equivocada o sin número", () => {
+    expect(() => leerLatitud("36°06,6' E", 1)).toThrow(/latitud usa N o S/);
+    expect(() => leerLongitud("5° N", 1)).toThrow(/longitud usa E o W/);
+    expect(() => leerLatitud("N", 1)).toThrow(/Falta el valor/);
+  });
+});

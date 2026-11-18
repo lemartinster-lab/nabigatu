@@ -29,26 +29,36 @@ export function redondearGrados(grados: number): number {
 
 /**
  * Lee un ángulo escrito de muchas formas:
- *   "45"  "45,5"  "45.5"  "45°30'"  "45 30"  "45º 30,5'"  "-4°15'"
+ *   "45"  "45,5"  "45.5"  "45°30'"  "45 30"  "45º 30,5'"  "-4°15'"  "36°06'36\""  "36 6 36"
  * Devuelve grados decimales. El signo solo se admite delante.
  */
 export function leerAngulo(texto: string): number {
-  const limpio = texto.trim().replace(/,/g, ".").replace(/[º°]/g, " ").replace(/['′’]/g, " ");
-  if (limpio === "") throw new EntradaInvalida("Falta el valor");
+  const limpio = texto
+    .trim()
+    .replace(/,/g, ".")
+    .replace(/[º°]/g, " ")
+    .replace(/(''|["″”])/g, " ")
+    .replace(/['′’]/g, " ");
+  if (limpio.trim() === "") throw new EntradaInvalida("Falta el valor");
 
-  const m = limpio.match(/^([+-])?\s*(\d+(?:\.\d+)?)(?:\s+(\d+(?:\.\d+)?))?\s*$/);
+  const m = limpio.match(/^\s*([+-])?\s*(\d+(?:\.\d+)?)(?:\s+(\d+(?:\.\d+)?))?(?:\s+(\d+(?:\.\d+)?))?\s*$/);
   if (!m) throw new EntradaInvalida(`No entiendo el ángulo «${texto}»`);
 
-  const [, signo, g, min] = m;
+  const [, signo, g, min, seg] = m;
   const grados = parseFloat(g);
   const minutos = min !== undefined ? parseFloat(min) : 0;
+  const segundos = seg !== undefined ? parseFloat(seg) : 0;
 
   if (min !== undefined && !Number.isInteger(grados)) {
     throw new EntradaInvalida("Si escribes minutos, los grados deben ser enteros");
   }
+  if (seg !== undefined && !Number.isInteger(minutos)) {
+    throw new EntradaInvalida("Si escribes segundos, los minutos deben ser enteros");
+  }
   if (minutos >= 60) throw new EntradaInvalida("Los minutos deben ser menores que 60");
+  if (segundos >= 60) throw new EntradaInvalida("Los segundos deben ser menores que 60");
 
-  const valor = grados + minutos / 60;
+  const valor = grados + minutos / 60 + segundos / 3600;
   return signo === "-" ? -valor : valor;
 }
 

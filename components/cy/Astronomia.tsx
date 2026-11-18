@@ -147,7 +147,7 @@ export function Horas() {
         </label>
         <Campo etiqueta="Fecha" valor={fecha} onChange={setFecha} placeholder="06/11/2026" modo="text" />
         <Campo etiqueta="Hora" valor={hora} onChange={setHora} placeholder="07:40:00" modo="text" />
-        <CampoConSigno etiqueta="Longitud" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="120°16,7'" />
+        <CampoConSigno tipo="lon" etiqueta="Longitud" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="120°16,7'" />
         <Campo etiqueta="Adelanto de la hora oficial" valor={adelanto} onChange={setAdelanto} unidad="h" ayuda="Península: +1 en invierno, +2 en verano. Canarias: 0 y +1." />
       </div>
       <Resultado salida={salida} />
@@ -233,7 +233,7 @@ export function HorarioAstro() {
         )}
         {esEstrella && <Campo etiqueta="Ángulo sidéreo de la estrella (AS)" valor={as} onChange={setAs} placeholder="290°50,4'" />}
         {esEstrella && <CampoConSigno etiqueta="Declinación de la estrella" valor={decE} onChange={setDecE} signo={sDecE} onSigno={setSDecE} positivo="N" negativo="S" placeholder="41°02,1'" />}
-        <CampoConSigno etiqueta="Longitud del observador" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="151°44,2'" />
+        <CampoConSigno tipo="lon" etiqueta="Longitud del observador" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="151°44,2'" />
       </div>
       <Resultado salida={salida} />
     </>
@@ -322,7 +322,7 @@ export function Meridiana() {
           {alt.campos(true)}
           <div className="grid gap-4 sm:grid-cols-2">
             <CampoConSigno etiqueta="Declinación del astro (Almanaque)" valor={dec} onChange={setDec} signo={sDec} onSigno={setSDec} positivo="N" negativo="S" placeholder="6°59,7'" />
-            <CampoConSigno etiqueta="Latitud de estima" valor={latE} onChange={setLatE} signo={sLatE} onSigno={setSLatE} positivo="N" negativo="S" placeholder="33°" ayuda="Para saber a qué lado pasa el astro." />
+            <CampoConSigno tipo="lat" etiqueta="Latitud de estima" valor={latE} onChange={setLatE} signo={sLatE} onSigno={setSLatE} positivo="N" negativo="S" placeholder="33°" ayuda="Para saber a qué lado pasa el astro." />
           </div>
         </>
       ) : (
@@ -331,7 +331,7 @@ export function Meridiana() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Campo etiqueta="Fecha" valor={fecha} onChange={setFecha} placeholder="10/10/2024" modo="text" />
             <Campo etiqueta="Pmg (Almanaque)" valor={pmg} onChange={setPmg} placeholder="11:47" modo="text" />
-            <CampoConSigno etiqueta="Longitud" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="6°" />
+            <CampoConSigno tipo="lon" etiqueta="Longitud" valor={lon} onChange={setLon} signo={sLon} onSigno={setSLon} placeholder="6°" />
             <Campo etiqueta="Adelanto de la hora oficial" valor={adelanto} onChange={setAdelanto} unidad="h" />
           </div>
         </>
