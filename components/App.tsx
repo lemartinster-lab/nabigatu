@@ -15,6 +15,7 @@ import { Alturas, Horas, HorarioAstro, Meridiana, Ortodromica, Polar, RectaAltur
 import { AlmanaqueCalculado } from "./cy/AlmanaqueCalculado";
 import { MisFaros } from "./MisFaros";
 import { AlcanceLicencia, Autonomia, HorasDeLuz, NormasMoto } from "./ln/Moto";
+import { AtribucionesPnb, TestPnb } from "./pnb/Pnb";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   examen: ModoExamen,
@@ -45,11 +46,13 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   alcance: AlcanceLicencia,
   autonomia: Autonomia,
   "normas-moto": NormasMoto,
+  "atribuciones-pnb": AtribucionesPnb,
+  "test-pnb": TestPnb,
 };
 
 const CLAVE = "nabigatu:v1";
 
-const NOMBRE_NIVEL: Record<Nivel, string> = { LN: "Titulín", PER: "PER", PY: "Patrón de Yate", CY: "Capitán de Yate" };
+const NOMBRE_NIVEL: Record<Nivel, string> = { LN: "Titulín", PNB: "PNB", PER: "PER", PY: "Patrón de Yate", CY: "Capitán de Yate" };
 
 export function App() {
   const [nivel, setNivel] = useState<Nivel>("PER");

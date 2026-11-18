@@ -4,7 +4,8 @@ import { useState } from "react";
 import { EntradaInvalida } from "@/lib/nucleo/angulos";
 import { formatoDuracion, formatoNumero, leerNumero, leerPositivo } from "@/lib/nucleo/unidades";
 import { ortoYOcaso } from "@/lib/ln/luz";
-import { autonomia, comprobarAlcance, NORMAS_MOTO, NORMAS_REVISADAS, LIMITE_LICENCIA_MILLAS } from "@/lib/ln/moto";
+import { autonomia, comprobarAlcance, NORMAS_MOTO, NORMAS_REVISADAS, LIMITE_LICENCIA, LIMITE_PNB } from "@/lib/ln/moto";
+import type { Nivel } from "@/lib/modulos";
 import { intentar, opt, req, reqPosicion, type Fila } from "../calculo";
 import { Campo, CampoPosicion, POSICION_VACIA, Resultado } from "../campos";
 
@@ -78,16 +79,17 @@ export function HorasDeLuz() {
   );
 }
 
-export function AlcanceLicencia() {
+export function AlcanceLicencia({ nivel }: { nivel: Nivel }) {
+  const limite = nivel === "PNB" ? LIMITE_PNB : LIMITE_LICENCIA;
   const [abrigo, setAbrigo] = useState(POSICION_VACIA);
   const [destino, setDestino] = useState(POSICION_VACIA);
   const [velocidad, setVelocidad] = useState("");
 
   const salida = intentar(() => {
-    const r = comprobarAlcance(reqPosicion(abrigo), reqPosicion(destino), opt(velocidad, (t) => leerPositivo(t, "Velocidad")));
+    const r = comprobarAlcance(reqPosicion(abrigo), reqPosicion(destino), opt(velocidad, (t) => leerPositivo(t, "Velocidad")), limite);
     return {
       resultados: [
-        { etiqueta: r.dentro ? "Dentro del límite de la licencia" : "Fuera del límite de la licencia", valor: r.dentro ? `Sí · margen ${formatoNumero(r.margen, 2)} mn` : `No · te pasas ${formatoNumero(-r.margen, 2)} mn`, destacado: true },
+        { etiqueta: r.dentro ? "Dentro del límite" : "Fuera del límite", valor: r.dentro ? `Sí · margen ${formatoNumero(r.margen, 2)} mn` : `No · te pasas ${formatoNumero(-r.margen, 2)} mn`, destacado: true },
         { etiqueta: "Distancia", valor: `${formatoNumero(r.distancia, 2)} millas` },
       ],
       pasos: r.pasos,
@@ -97,7 +99,7 @@ export function AlcanceLicencia() {
   return (
     <>
       <p className="text-sm text-slate-600">
-        Con la licencia de navegación no puedes alejarte más de {LIMITE_LICENCIA_MILLAS} millas de un puerto, marina o abrigo.
+        Con {limite.titulo} no puedes alejarte más de {limite.millas} millas de un puerto, marina o abrigo.
         Comprueba si el punto al que quieres ir está dentro.
       </p>
       <div className="grid gap-4 lg:grid-cols-2">
