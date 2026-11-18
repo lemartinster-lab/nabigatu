@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Salida } from "./calculo";
+import { leerFaros, suscribirFaros, type Faro } from "@/lib/faros";
+import { aGradosMinutos } from "@/lib/nucleo/angulos";
 
 interface CampoProps {
   etiqueta: string;
@@ -191,20 +194,62 @@ export interface ValorPosicion {
 
 export const POSICION_VACIA: ValorPosicion = { lat: "", sLat: 1, lon: "", sLon: -1 };
 
+/** Faros guardados por el usuario, sincronizados entre componentes. */
+export function useMisFaros(): Faro[] {
+  const [faros, setFaros] = useState<Faro[]>([]);
+  useEffect(() => {
+    setFaros(leerFaros());
+    return suscribirFaros(() => setFaros(leerFaros()));
+  }, []);
+  return faros;
+}
+
+/** Texto de un ángulo para rellenar un campo: 36.11 → «36°06,6'». */
+export function textoAngulo(grados: number, cifras = 2): string {
+  const { g, m } = aGradosMinutos(grados);
+  return `${String(g).padStart(cifras, "0")}°${m.toFixed(1).replace(".", ",").padStart(4, "0")}'`;
+}
+
+export function posicionAValor(p: { lat: number; lon: number }): ValorPosicion {
+  return { lat: textoAngulo(p.lat), sLat: p.lat >= 0 ? 1 : -1, lon: textoAngulo(p.lon, 3), sLon: p.lon >= 0 ? 1 : -1 };
+}
+
 export function CampoPosicion({
   etiqueta,
   valor,
   onChange,
   ayuda,
+  conFaros = true,
 }: {
   etiqueta: string;
   valor: ValorPosicion;
   onChange: (v: ValorPosicion) => void;
   ayuda?: string;
+  /** Mostrar el desplegable de «Mis faros». */
+  conFaros?: boolean;
 }) {
+  const faros = useMisFaros();
   return (
     <fieldset className="flex flex-col gap-2 rounded-2xl bg-white p-3 ring-1 ring-slate-200">
       <legend className="px-1 text-sm font-semibold text-slate-700">{etiqueta}</legend>
+      {conFaros && faros.length > 0 && (
+        <select
+          aria-label={`${etiqueta}: elegir de Mis faros`}
+          value=""
+          onChange={(e) => {
+            const f = faros.find((x) => x.id === e.target.value);
+            if (f) onChange(posicionAValor(f));
+          }}
+          className="rounded-lg border border-slate-300 bg-sky-50 px-2 py-1.5 text-sm text-sky-900"
+        >
+          <option value="">Elegir de Mis faros…</option>
+          {faros.map((f) => (
+            <option key={f.id} value={f.id}>
+              {f.nombre}
+            </option>
+          ))}
+        </select>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         <CampoConSigno
           etiqueta="Latitud"

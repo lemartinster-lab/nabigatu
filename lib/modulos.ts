@@ -50,10 +50,12 @@ export const MODULOS: Modulo[] = [
   { id: "estima", titulo: "Situación por estima", resumen: "Uno o varios rumbos, con viento y corriente", nivel: "PY", disponible: true },
   { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: true },
   { id: "situacion", titulo: "Situación por demoras", resumen: "Dos demoras, traslado, demora y distancia", nivel: "PY", disponible: true },
+  { id: "faros", titulo: "Mis faros", resumen: "Faros de tu carta para elegirlos con un toque", nivel: "PY", disponible: true },
   { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
   { id: "ortodromica", titulo: "Ortodrómica", resumen: "Rumbo inicial, distancia y vértice", nivel: "CY", disponible: true },
   { id: "horas", titulo: "Horas y fechas", resumen: "HcG, HcL, hora de zona y oficial", nivel: "CY", disponible: true },
+  { id: "almanaque", titulo: "Almanaque calculado", resumen: "hG y declinación del Sol y las estrellas sin Almanaque", nivel: "CY", disponible: true },
   { id: "horario", titulo: "Horario del astro", resumen: "hG, hL y declinación con el Almanaque", nivel: "CY", disponible: true },
   { id: "alturas", titulo: "Corrección de alturas", resumen: "De la altura instrumental a la verdadera", nivel: "CY", disponible: true },
   { id: "meridiana", titulo: "Meridiana", resumen: "Latitud por la altura meridiana y hora del paso", nivel: "CY", disponible: true },

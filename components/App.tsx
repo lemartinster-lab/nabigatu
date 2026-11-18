@@ -12,6 +12,8 @@ import { Estima, LlegarAHora, Loxodromica } from "./py/Navegacion";
 import { Situacion } from "./py/Situacion";
 import { ModoExamen } from "./examen/ModoExamen";
 import { Alturas, Horas, HorarioAstro, Meridiana, Ortodromica, Polar, RectaAltura } from "./cy/Astronomia";
+import { AlmanaqueCalculado } from "./cy/AlmanaqueCalculado";
+import { MisFaros } from "./MisFaros";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   examen: ModoExamen,
@@ -36,6 +38,8 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   meridiana: Meridiana,
   polar: Polar,
   "recta-altura": RectaAltura,
+  almanaque: AlmanaqueCalculado,
+  faros: MisFaros,
 };
 
 const CLAVE = "nabigatu:v1";

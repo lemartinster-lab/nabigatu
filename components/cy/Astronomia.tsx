@@ -201,7 +201,8 @@ export function HorarioAstro() {
   return (
     <>
       <p className="text-sm text-slate-600">
-        Copia del Almanaque Náutico los valores tabulados y calculo el horario y la declinación a la hora exacta.
+        Copia del Almanaque Náutico los valores tabulados y calculo el horario y la declinación a la hora exacta. ¿No tienes
+        el Almanaque a mano? Usa «Almanaque calculado».
         {esEstrella && " Para una estrella, los hG son los del punto Aries (♈)."}
       </p>
       <div className="grid gap-4 sm:grid-cols-2">

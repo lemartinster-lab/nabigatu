@@ -52,10 +52,19 @@ Los datos del Almanaque Náutico (hG, declinación, ángulo sidéreo, semidiáme
 
 Comprobaciones con exámenes oficiales: diez ejercicios de ortodrómica (Junta de Andalucía 2019–2024, Euskadi 2024 y otro de 2021) y una meridiana del Sol (Euskadi, noviembre de 2024) dan exactamente la opción correcta. Están incluidos como tests.
 
-## Próximas mejoras posibles
+## Almanaque calculado
 
-- Cálculo aproximado propio de las efemérides del Sol y de las estrellas, para practicar sin el Almanaque.
-- Coordenadas de los faros de la carta del Estrecho para los módulos de situación.
+Calcula el horario en Greenwich y la declinación del Sol (con su semidiámetro), del punto Aries y de 108 estrellas de navegación para cualquier instante UT, y con una situación de estima da el azimut y la altura estimada. Sirve para practicar sin el Almanaque Náutico; en el examen hay que usar el Almanaque.
+
+- Sol: teoría VSOP87 recortada (195 términos) con FK5, nutación y aberración.
+- Punto Aries: tiempo sidéreo aparente de Greenwich.
+- Estrellas: posiciones J2000 de Hipparcos (catálogo de PyEphem) con movimiento propio, precesión, nutación y aberración.
+
+Contrastado con astropy (error máximo de 0,07′ en el horario del Sol entre 2019 y 2030) y con ocho ejercicios de estrellas de exámenes oficiales de Capitán de Yate (Algol, Denebola, Fomalhaut, Rigel, Mintaka, Vindemiatrix, Alnitak y Acamar): en todos, el resultado es una de las opciones del examen, siete de ellos a la décima de minuto exacta. Están incluidos como tests.
+
+## Mis faros
+
+Lista de faros con la situación medida por el usuario en su propia carta, guardada en el navegador. Cualquier campo de posición permite elegirlos con un toque. La app no trae coordenadas de serie: cada edición de la carta del examen puede diferir alguna décima de minuto.
 
 ## Estructura
 
@@ -67,6 +76,8 @@ Comprobaciones con exámenes oficiales: diez ejercicios de ortodrómica (Junta d
 | `lib/cy/` | Cálculos del Capitán de Yate |
 | `lib/examen/` | Generador de ejercicios tipo test |
 | `lib/modulos.ts` | Catálogo de módulos por titulación |
+| `lib/cy/efemerides.ts`, `lib/cy/catalogo-estrellas.ts` | Almanaque calculado |
+| `lib/faros.ts`, `components/MisFaros.tsx` | Mis faros |
 | `components/per/`, `components/py/`, `components/cy/` | Formularios de cada módulo |
 | `components/examen/` | Modo examen |
 | `components/campos.tsx` | Campos, selectores y presentación de resultados |
