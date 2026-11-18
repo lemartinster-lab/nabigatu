@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Nivel } from "@/lib/modulos";
-import { generarPregunta, temasDeNivel, type Pregunta, type Tema } from "@/lib/examen/generador";
+import { esTemaCarta, FarosInsuficientes, generarPregunta, temasDeNivel, type Pregunta, type Tema } from "@/lib/examen/generador";
+import { leerFaros, suscribirFaros, type Faro } from "@/lib/faros";
 
 const LETRAS = ["a", "b", "c", "d"];
 
@@ -16,13 +17,35 @@ export function ModoExamen({ nivel }: { nivel: Nivel }) {
   const [pregunta, setPregunta] = useState<Pregunta | null>(null);
   const [elegida, setElegida] = useState<number | null>(null);
   const [marcador, setMarcador] = useState({ aciertos: 0, total: 0 });
+  const [faros, setFaros] = useState<Faro[]>([]);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  // «Mis faros» se lee en el navegador y se actualiza si el alumno añade alguno.
+  useEffect(() => {
+    setFaros(leerFaros());
+    return suscribirFaros(() => setFaros(leerFaros()));
+  }, []);
 
   const nueva = useCallback(() => {
     const disponibles = temas.map((t) => t.id);
     const t = tema === "todos" ? disponibles[Math.floor(Math.random() * disponibles.length)] : tema;
-    setPregunta(generarPregunta(t, semillaNueva()));
     setElegida(null);
-  }, [tema, nivel]); // eslint-disable-line react-hooks/exhaustive-deps
+    try {
+      setPregunta(generarPregunta(t, semillaNueva(), faros));
+      setAviso(null);
+    } catch (e) {
+      if (!(e instanceof FarosInsuficientes)) throw e;
+      if (tema === "todos") {
+        // Sin faros del Estrecho, «Todos los temas» salta los ejercicios de carta.
+        const sinCarta = disponibles.filter((id) => !esTemaCarta(id));
+        setPregunta(generarPregunta(sinCarta[Math.floor(Math.random() * sinCarta.length)], semillaNueva()));
+        setAviso(null);
+      } else {
+        setPregunta(null);
+        setAviso(e.message);
+      }
+    }
+  }, [tema, nivel, faros]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Primera pregunta al entrar y al cambiar de tema (solo en el navegador: usa azar).
   useEffect(() => {
@@ -42,8 +65,9 @@ export function ModoExamen({ nivel }: { nivel: Nivel }) {
     <>
       <p className="text-sm text-slate-600">
         Ejercicios tipo test generados al azar, con cuatro opciones como en el examen. Las respuestas incorrectas son los
-        errores más habituales, y al responder verás por qué. Los ejercicios que necesitan la carta del Estrecho no se
-        generan aquí, y en los de astronomía el enunciado ya incluye los datos del Almanaque.
+        errores más habituales, y al responder verás por qué. Los ejercicios de la carta del Estrecho usan los faros que has
+        medido en tu carta («Mis faros»): resuélvelos sobre tu carta de papel y elige la opción. En los de astronomía, el
+        enunciado ya incluye los datos del Almanaque.
       </p>
 
       <div className="flex flex-wrap items-end gap-3">
@@ -67,6 +91,12 @@ export function ModoExamen({ nivel }: { nivel: Nivel }) {
           {marcador.total > 0 && <span className="text-slate-500"> ({Math.round((marcador.aciertos / marcador.total) * 100)}%)</span>}
         </div>
       </div>
+
+      {aviso && (
+        <p role="status" className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+          {aviso}
+        </p>
+      )}
 
       {pregunta && (
         <section className="flex flex-col gap-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200" aria-label="Pregunta">

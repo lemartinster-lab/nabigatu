@@ -34,7 +34,9 @@ Los métodos de mareas y loxodrómica se han contrastado con un examen oficial d
 
 ## Modo examen
 
-Ejercicios tipo test generados al azar, con cuatro opciones, para el PER, el Patrón de Yate y el Capitán de Yate (en astronomía, el enunciado incluye los datos del Almanaque). Las opciones incorrectas corresponden a los errores típicos (signo de la Ct, olvidar el adelanto, regla de los doceavos, no aplicar cos lm…) y cada una explica su error. Los ejercicios que necesitan la carta del Estrecho no se generan.
+Ejercicios tipo test generados al azar, con cuatro opciones, para el PER, el Patrón de Yate y el Capitán de Yate (en astronomía, el enunciado incluye los datos del Almanaque). Las opciones incorrectas corresponden a los errores típicos (signo de la Ct, olvidar el adelanto, regla de los doceavos, no aplicar cos lm…) y cada una explica su error.
+
+**Ejercicios de la carta del Estrecho.** Situación por dos demoras de aguja simultáneas y por demora y distancia a un faro. Se generan con los faros que el alumno ha medido en su carta («Mis faros»), así que la opción correcta coincide con lo que mide en su papel. El barco se coloca en el agua (contorno simplificado del Estrecho, trazado a unas 2 millas de la costa, que no procede de la carta), a 2,5–14 millas de faros que se ven desde el mar, y las cuatro opciones quedan a más de una milla entre sí para que se distingan en la carta. Sin faros del Estrecho, «Todos los temas» se salta estos ejercicios.
 
 ## Fase 3: Capitán de Yate (disponible)
 
@@ -82,7 +84,7 @@ Lista de faros con la situación medida por el usuario en su propia carta, guard
 | `lib/per/` | Cálculos del PER |
 | `lib/py/` | Cálculos del Patrón de Yate |
 | `lib/cy/` | Cálculos del Capitán de Yate |
-| `lib/examen/` | Generador de ejercicios tipo test |
+| `lib/examen/` | Generador de ejercicios tipo test (`carta.ts`: ejercicios de la carta del Estrecho) |
 | `lib/modulos.ts` | Catálogo de módulos por titulación |
 | `lib/cy/efemerides.ts`, `lib/cy/catalogo-estrellas.ts`, `lib/cy/almanaque.ts` | Almanaque calculado: efemérides, página del día, fenómenos e incrementos |
 | `lib/faros.ts`, `components/MisFaros.tsx` | Mis faros |
