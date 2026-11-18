@@ -21,7 +21,7 @@ import { convertirHora, formatoInstante } from "../cy/tiempo";
 import { corregirAltura, formatoAltura } from "../cy/alturas";
 import { formatoDeclinacion, formatoHorario } from "../cy/astros";
 import { alturaYAzimut, latitudMeridiana, rectaDeAltura } from "../cy/astronomica";
-import { preguntaDemoraDistancia, preguntaDosDemoras, type FaroCarta } from "./carta";
+import { preguntaDemoraDistancia, preguntaDosDemoras, preguntaEnfilacion, type FaroCarta } from "./carta";
 
 export { FarosInsuficientes, type FaroCarta } from "./carta";
 
@@ -46,7 +46,7 @@ export type Tema =
   | TemaCarta;
 
 /** Ejercicios sobre la carta del Estrecho: necesitan los faros de «Mis faros». */
-export type TemaCarta = "carta-dos-demoras" | "carta-demora-distancia";
+export type TemaCarta = "carta-dos-demoras" | "carta-demora-distancia" | "carta-enfilacion";
 
 export function esTemaCarta(t: Tema): t is TemaCarta {
   return t.startsWith("carta-");
@@ -61,6 +61,7 @@ export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "rumbo-a-dar", nombre: "Rumbo a dar con viento y corriente", nivel: "PER" },
   { id: "carta-dos-demoras", nombre: "Carta: situación por dos demoras", nivel: "PER" },
   { id: "carta-demora-distancia", nombre: "Carta: situación por demora y distancia", nivel: "PER" },
+  { id: "carta-enfilacion", nombre: "Carta: Ct y desvío por enfilación", nivel: "PER" },
   { id: "mareas-sonda", nombre: "Mareas: sonda a una hora", nivel: "PY" },
   { id: "mareas-hora", nombre: "Mareas: hora para una sonda", nivel: "PY" },
   { id: "loxodromica", nombre: "Loxodrómica: rumbo directo", nivel: "PY" },
@@ -780,7 +781,7 @@ const GENERADORES: Record<Exclude<Tema, TemaCarta>, (az: Azar) => Pregunta> = {
  */
 export function generarPregunta(tema: Tema, semilla: number, faros: readonly FaroCarta[] = []): Pregunta {
   if (esTemaCarta(tema)) {
-    const gen = tema === "carta-dos-demoras" ? preguntaDosDemoras : preguntaDemoraDistancia;
+    const gen = { "carta-dos-demoras": preguntaDosDemoras, "carta-demora-distancia": preguntaDemoraDistancia, "carta-enfilacion": preguntaEnfilacion }[tema];
     return gen(crearAzar(semilla), faros);
   }
   for (let intento = 0; intento < 20; intento++) {

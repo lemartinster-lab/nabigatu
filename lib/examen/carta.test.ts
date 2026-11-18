@@ -66,3 +66,34 @@ for (const tema of ["carta-dos-demoras", "carta-demora-distancia"] as const) {
 it("los temas de carta son del PER", () => {
   expect(TEMAS.filter((t) => t.id.startsWith("carta-")).every((t) => t.nivel === "PER")).toBe(true);
 });
+
+describe("modo examen: carta-enfilacion", () => {
+  const RAD = Math.PI / 180;
+  const leerGrados = (t: string) => {
+    const m = t.match(/(\d+)°(?:\s*([\d,]+)′)?\s*([EW])?/);
+    if (!m) throw new Error(t);
+    const v = +m[1] + (m[2] ? parseFloat(m[2].replace(",", ".")) / 60 : 0);
+    return m[3] === "W" ? -v : v;
+  };
+  it("300 preguntas: la opción correcta sale de la línea entre los faros y las opciones se distinguen con el transportador", () => {
+    for (let semilla = 1; semilla <= 300; semilla++) {
+      const p = generarPregunta("carta-enfilacion", semilla * 104729, FAROS_PRUEBA);
+      const m = p.enunciado[0].match(/faro de (.+) y, detrás de él, el de (.+)\.$/)!;
+      const cerca = FAROS_PRUEBA.find((f) => f.nombre === m[1])!;
+      const lejos = FAROS_PRUEBA.find((f) => f.nombre === m[2])!;
+      const v = aPlano(lejos, cerca);
+      const dv = (Math.atan2(v.x, v.y) / RAD + 360) % 360;
+      const da = leerGrados(p.enunciado[1].split("=")[1]);
+      const ct = ((dv - da + 540) % 360) - 180;
+      const dmLinea = p.enunciado.find((l) => l.startsWith("Declinación"));
+      const esperado = dmLinea ? ct - leerGrados(dmLinea.split(":")[1]) : ct;
+      const correcta = p.opciones.find((o) => o.correcta)!;
+      expect(Math.abs(leerGrados(correcta.texto.split("=")[1]) - esperado)).toBeLessThanOrEqual(0.26);
+      const valores = p.opciones.map((o) => leerGrados(o.texto.split("=")[1]));
+      for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) expect(Math.abs(valores[i] - valores[j])).toBeGreaterThanOrEqual(1.5);
+    }
+  });
+  it("sin faros avisa", () => {
+    expect(() => generarPregunta("carta-enfilacion", 1, FAROS_PRUEBA.slice(0, 1))).toThrow(FarosInsuficientes);
+  });
+});
