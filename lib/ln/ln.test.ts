@@ -6,7 +6,7 @@ const hhmm = (ms: number) => new Date(ms).toISOString().slice(11, 16);
 
 // Referencia: PyEphem (horizonte −0° 34′, limbo superior). Diferencias medidas < 3 s.
 describe("orto y ocaso", () => {
-  it("Santa Cruz de Tenerife, 18-11-2026 (UT)", () => {
+  it("Santa Cruz de Tenerife, 18-11-2026 (UT) — referencia: PyEphem", () => {
     const r = ortoYOcaso(Date.UTC(2026, 10, 18), { lat: 28.4636, lon: -16.2518 }, 0);
     expect(hhmm(r.orto!)).toBe("07:29");
     expect(hhmm(r.ocaso!)).toBe("18:10");
@@ -14,13 +14,13 @@ describe("orto y ocaso", () => {
     expect(hhmm(r.motoDesde!)).toBe("08:29");
     expect(hhmm(r.motoHasta!)).toBe("17:10");
   });
-  it("Donostia, solsticio de invierno", () => {
+  it("Donostia, solsticio de invierno de 2026 — referencia: PyEphem", () => {
     const r = ortoYOcaso(Date.UTC(2026, 11, 21), { lat: 43.3183, lon: -1.9812 }, 1);
     expect(hhmm(r.orto!)).toBe("07:36");
     expect(hhmm(r.ocaso!)).toBe("16:35");
     expect(r.horasDeLuz).toBeCloseTo(8.97, 1);
   });
-  it("Palma, 1 de agosto, con la hora oficial de verano", () => {
+  it("Palma, 1 de agosto de 2026 — referencia: PyEphem", () => {
     const r = ortoYOcaso(Date.UTC(2026, 7, 1), { lat: 39.5696, lon: 2.6502 }, 2);
     expect(hhmm(r.orto!)).toBe("04:48");
     expect(hhmm(r.ocaso!)).toBe("19:02");
@@ -63,7 +63,7 @@ describe("autonomía", () => {
 });
 
 describe("normas", () => {
-  it("cada norma cita su fuente oficial", () => {
+  it("cada norma cita su artículo del BOE (RD 875/2014 y RD 259/2002, consolidados a 30/12/2025)", () => {
     for (const n of NORMAS_MOTO) {
       expect(n.fuente).toMatch(/Real Decreto|Capitanía/);
       if (n.fuente.startsWith("Real Decreto")) expect(n.url).toMatch(/^https:\/\/www\.boe\.es\//);
