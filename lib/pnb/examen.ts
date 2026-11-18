@@ -87,6 +87,13 @@ export function generarPracticaPnb(unidad: UnidadPnb, semilla: number): Pregunta
   return barajar(preguntasDeUnidad(unidad), rnd).map((p) => mostrar(p, rnd));
 }
 
+/** Repaso: las preguntas indicadas, en orden aleatorio (los ids que no existan se ignoran). */
+export function generarRepasoPnb(ids: string[], semilla: number): PreguntaMostrada[] {
+  const rnd = aleatorio(semilla);
+  const quiero = new Set(ids);
+  return barajar(PREGUNTAS_PNB.filter((p) => quiero.has(p.id)), rnd).map((p) => mostrar(p, rnd));
+}
+
 export interface CorreccionPnb {
   aciertos: number;
   errores: number;
