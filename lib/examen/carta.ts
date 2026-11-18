@@ -13,7 +13,7 @@ import { aPlano, desdePlano, type Posicion } from "../nucleo/coordenadas";
 import { aPolar } from "../nucleo/vectores";
 import { formatoEW, formatoRumbo } from "../nucleo/angulos";
 import { formatoNumero } from "../nucleo/unidades";
-import { correccionTotal } from "../per/correccion";
+import { correccionTotal, ctDesdeDemora } from "../per/correccion";
 import { formatoPosicion } from "../py/estima";
 import { demoraYDistancia, dosDemoras } from "../py/situacion";
 import type { crearAzar, Opcion, Pregunta } from "./generador";
@@ -42,7 +42,9 @@ const ZONA = { latMin: 35.6, latMax: 36.45, lonMin: -6.5, lonMax: -5.0 };
  * Simplificado a propósito: solo sirve para colocar el barco en el mar.
  */
 export const MAR_ESTRECHO: Posicion[] = [
-  { lat: 36.15, lon: -6.25 },
+  // Atlántico, costa de Cádiz
+  { lat: 36.28, lon: -6.25 },
+  { lat: 36.2, lon: -6.13 },
   { lat: 36.12, lon: -6.08 },
   { lat: 36.12, lon: -5.97 },
   { lat: 36.04, lon: -5.85 },
@@ -50,8 +52,14 @@ export const MAR_ESTRECHO: Posicion[] = [
   { lat: 35.97, lon: -5.61 },
   { lat: 36.02, lon: -5.45 },
   { lat: 36.04, lon: -5.38 },
+  // Gibraltar y Mediterráneo
   { lat: 36.06, lon: -5.3 },
-  { lat: 35.97, lon: -5.25 },
+  { lat: 36.12, lon: -5.3 },
+  { lat: 36.2, lon: -5.28 },
+  { lat: 36.2, lon: -5.1 },
+  { lat: 35.93, lon: -5.1 },
+  // Ceuta y costa de Marruecos
+  { lat: 35.93, lon: -5.24 },
   { lat: 35.93, lon: -5.33 },
   { lat: 35.95, lon: -5.47 },
   { lat: 35.88, lon: -5.62 },
@@ -103,7 +111,7 @@ function visible(barco: Posicion, faro: Posicion): { dv: number; d: number } | n
 
 function barcoAlAzar(az: Azar): Posicion {
   for (let i = 0; i < 500; i++) {
-    const p = { lat: az.real(35.75, 36.15), lon: az.real(-6.25, -5.25) };
+    const p = { lat: az.real(35.75, 36.28), lon: az.real(-6.25, -5.1) };
     if (enElMar(p)) return p;
   }
   return { lat: 35.95, lon: -5.75 };
@@ -132,7 +140,7 @@ function separacion(a: Posicion, b: Posicion): number {
  */
 function opcionesSituacion(az: Azar, correcta: Posicion, errores: { pos: () => Posicion; error: string }[]): Opcion[] {
   const elegidas: { pos: Posicion; opcion: Opcion }[] = [{ pos: correcta, opcion: { texto: formatoPosicion(correcta), correcta: true } }];
-  const cabe = (p: Posicion) => elegidas.every((e) => separacion(e.pos, p) >= 1);
+  const cabe = (p: Posicion) => elegidas.every((e) => separacion(e.pos, p) >= 1.1); // 1 milla tras redondear a la décima
   for (const e of errores) {
     if (elegidas.length === 4) break;
     try {
@@ -254,4 +262,111 @@ export function preguntaDemoraDistancia(az: Azar, todos: readonly FaroCarta[]): 
     };
   }
   throw new FarosInsuficientes(1);
+}
+
+/** Rumbo verdadero de la línea que va del faro `desde` al faro `hacia` (lo que se mide en la carta). */
+function demoraEntre(desde: Posicion, hacia: Posicion): number {
+  return normalizar360(aPolar(aPlano(hacia, desde)).rumbo);
+}
+
+/**
+ * La línea entre los dos faros no debe cruzar tierra (si no, el de detrás quedaría tapado).
+ * Se comprueban los puntos de la línea a más de 3,5 millas de ambos faros, porque el
+ * contorno de mar va a unas 2 millas de la costa.
+ */
+function seVenEnLinea(a: Posicion, b: Posicion): boolean {
+  const v = aPlano(b, a);
+  const largo = aPolar(v).modulo;
+  for (let k = 1; k < 20; k++) {
+    const f = k / 20;
+    if (f * largo < 3.5 || (1 - f) * largo < 3.5) continue;
+    if (!enElMar(desdePlano({ x: v.x * f, y: v.y * f }, a))) return false;
+  }
+  return true;
+}
+
+/**
+ * Corrección total (o desvío) por enfilación de dos faros.
+ * El barco está en la prolongación de la línea que une los faros, del lado del faro más cercano,
+ * y toma la demora de aguja de la enfilación. En la carta se mide la demora verdadera de la línea.
+ */
+export function preguntaEnfilacion(az: Azar, todos: readonly FaroCarta[]): Pregunta {
+  const faros = farosDelEstrecho(todos);
+  if (faros.length < 2) throw new FarosInsuficientes(2);
+
+  const pares: [FaroCarta, FaroCarta][] = [];
+  for (const a of faros)
+    for (const b of faros) {
+      if (a === b) continue;
+      const d = aPolar(aPlano(b, a)).modulo;
+      if (d >= 1 && d <= 15 && seVenEnLinea(a, b)) pares.push([a, b]); // a: el faro de delante (más cerca); b: el de detrás
+    }
+
+  // Situaciones posibles del barco: en la prolongación de la línea, a 2,5–10 millas del faro de delante.
+  const candidatos: { cerca: FaroCarta; lejos: FaroCarta; dv: number }[] = [];
+  for (const [cerca, lejos] of pares) {
+    const v = aPlano(cerca, lejos);
+    const largo = aPolar(v).modulo;
+    for (let k = 2.5; k <= 10; k += 0.5) {
+      const barco = desdePlano({ x: (v.x / largo) * (largo + k), y: (v.y / largo) * (largo + k) }, lejos);
+      if (enElMar(barco) && visible(barco, cerca)) {
+        // Desde el barco se ven los dos faros en línea: Dv = rumbo de la línea del faro cercano al lejano.
+        candidatos.push({ cerca, lejos, dv: demoraEntre(cerca, lejos) });
+        break;
+      }
+    }
+  }
+
+  for (let intento = 0; intento < 50 && candidatos.length > 0; intento++) {
+    const { cerca, lejos, dv } = az.elegir(candidatos);
+    const { dm, ct } = datosAguja(az);
+    const da = normalizar360(Math.round(dv - ct));
+    const pideDesvio = az.entero(0, 1) === 1;
+    const r = ctDesdeDemora(dv, da, dm);
+    const ctReal = r.ct;
+    const desvioReal = r.desvio!;
+    const medio = (x: number) => Math.round(x * 2) / 2;
+
+    const correcta = medio(pideDesvio ? desvioReal : ctReal);
+    const errores = pideDesvio
+      ? [
+          { valor: medio(ctReal + dm), error: "Se ha sumado la dm en lugar de restarla: Δ = Ct − dm." },
+          { valor: medio(ctReal), error: "Se ha dado la Ct como desvío, sin restarle la dm." },
+          { valor: medio(da - dv - dm), error: "Se ha calculado la Ct al revés (Da − Dv): Ct = Dv − Da." },
+        ]
+      : [
+          { valor: medio(da - dv), error: "Se ha restado al revés: Ct = Dv − Da, no Da − Dv." },
+          { valor: medio(ctReal - dm), error: "Se ha dado el desvío (Ct − dm) en lugar de la Ct." },
+        ];
+
+    const etiqueta = pideDesvio ? "Δ" : "Ct";
+    const texto = (x: number) => `${etiqueta} = ${formatoEW(x)}`;
+    const elegidas: { valor: number; opcion: Opcion }[] = [{ valor: correcta, opcion: { texto: texto(correcta), correcta: true } }];
+    const cabe = (x: number) => Math.abs(x) <= 20 && elegidas.every((e) => Math.abs(e.valor - x) >= 1.5);
+    for (const e of errores) if (elegidas.length < 4 && cabe(e.valor)) elegidas.push({ valor: e.valor, opcion: { texto: texto(e.valor), correcta: false, error: e.error } });
+    for (let i = 0; elegidas.length < 4 && i < 100; i++) {
+      const x = correcta + az.signo() * az.elegir([2, 2.5, 3, 3.5, 4, 5]);
+      if (cabe(x)) elegidas.push({ valor: x, opcion: { texto: texto(x), correcta: false, error: "Valor que no corresponde a ningún cálculo correcto." } });
+    }
+    if (elegidas.length < 4) continue;
+
+    return {
+      tema: "carta-enfilacion",
+      enunciado: [
+        `Navegando por el Estrecho, se observan en enfilación el faro de ${cerca.nombre} y, detrás de él, el de ${lejos.nombre}.`,
+        `Demora de aguja de la enfilación: Da = ${formatoRumbo(da)}.`,
+        ...(pideDesvio ? [`Declinación magnética: ${formatoEW(dm)}.`, "Calcular el desvío de la aguja."] : ["Calcular la corrección total."]),
+        AVISO_FAROS,
+      ],
+      opciones: az.mezclar(elegidas.map((e) => e.opcion)),
+      solucion: [
+        `En la carta, la línea de ${cerca.nombre} a ${lejos.nombre} tiene Dv = ${formatoRumbo(dv)}`,
+        "(desde el barco se ven en línea: la demora verdadera es la de esa línea)",
+        "",
+        ...(pideDesvio ? r.pasos : r.pasos.slice(0, 3)),
+        `Redondeado a medio grado: ${texto(correcta)}`,
+      ],
+    };
+  }
+  throw new FarosInsuficientes(2);
 }
