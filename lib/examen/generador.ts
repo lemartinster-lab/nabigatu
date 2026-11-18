@@ -21,6 +21,9 @@ import { convertirHora, formatoInstante } from "../cy/tiempo";
 import { corregirAltura, formatoAltura } from "../cy/alturas";
 import { formatoDeclinacion, formatoHorario } from "../cy/astros";
 import { alturaYAzimut, latitudMeridiana, rectaDeAltura } from "../cy/astronomica";
+import { preguntaDemoraDistancia, preguntaDosDemoras, type FaroCarta } from "./carta";
+
+export { FarosInsuficientes, type FaroCarta } from "./carta";
 
 export type Tema =
   | "rumbos"
@@ -39,7 +42,15 @@ export type Tema =
   | "horas"
   | "meridiana"
   | "altura"
-  | "recta";
+  | "recta"
+  | TemaCarta;
+
+/** Ejercicios sobre la carta del Estrecho: necesitan los faros de «Mis faros». */
+export type TemaCarta = "carta-dos-demoras" | "carta-demora-distancia";
+
+export function esTemaCarta(t: Tema): t is TemaCarta {
+  return t.startsWith("carta-");
+}
 
 export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "rumbos", nombre: "Corrección total y rumbos", nivel: "PER" },
@@ -48,6 +59,8 @@ export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "corriente", nombre: "Efecto de la corriente", nivel: "PER" },
   { id: "corriente-desconocida", nombre: "Corriente desconocida", nivel: "PER" },
   { id: "rumbo-a-dar", nombre: "Rumbo a dar con viento y corriente", nivel: "PER" },
+  { id: "carta-dos-demoras", nombre: "Carta: situación por dos demoras", nivel: "PER" },
+  { id: "carta-demora-distancia", nombre: "Carta: situación por demora y distancia", nivel: "PER" },
   { id: "mareas-sonda", nombre: "Mareas: sonda a una hora", nivel: "PY" },
   { id: "mareas-hora", nombre: "Mareas: hora para una sonda", nivel: "PY" },
   { id: "loxodromica", nombre: "Loxodrómica: rumbo directo", nivel: "PY" },
@@ -740,7 +753,7 @@ function preguntaRecta(az: Azar): Pregunta {
   }
 }
 
-const GENERADORES: Record<Tema, (az: Azar) => Pregunta> = {
+const GENERADORES: Record<Exclude<Tema, TemaCarta>, (az: Azar) => Pregunta> = {
   rumbos: preguntaRumbos,
   declinacion: preguntaDeclinacion,
   dvt: preguntaDVT,
@@ -762,9 +775,14 @@ const GENERADORES: Record<Tema, (az: Azar) => Pregunta> = {
 
 /**
  * Genera una pregunta. Si un caso al azar resulta imposible (p. ej. corriente
- * demasiado fuerte), se prueba con otra semilla.
+ * demasiado fuerte), se prueba con otra semilla. Los ejercicios de carta usan los
+ * faros del alumno y lanzan FarosInsuficientes si no tiene bastantes.
  */
-export function generarPregunta(tema: Tema, semilla: number): Pregunta {
+export function generarPregunta(tema: Tema, semilla: number, faros: readonly FaroCarta[] = []): Pregunta {
+  if (esTemaCarta(tema)) {
+    const gen = tema === "carta-dos-demoras" ? preguntaDosDemoras : preguntaDemoraDistancia;
+    return gen(crearAzar(semilla), faros);
+  }
   for (let intento = 0; intento < 20; intento++) {
     try {
       const p = GENERADORES[tema](crearAzar(semilla + intento * 7919));
@@ -775,4 +793,3 @@ export function generarPregunta(tema: Tema, semilla: number): Pregunta {
   }
   throw new Error(`No se ha podido generar una pregunta de ${tema}`);
 }
-

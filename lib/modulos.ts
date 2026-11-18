@@ -50,7 +50,7 @@ export const MODULOS: Modulo[] = [
   { id: "estima", titulo: "Situación por estima", resumen: "Uno o varios rumbos, con viento y corriente", nivel: "PY", disponible: true },
   { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: true },
   { id: "situacion", titulo: "Situación por demoras", resumen: "Dos demoras, traslado, demora y distancia", nivel: "PY", disponible: true },
-  { id: "faros", titulo: "Mis faros", resumen: "Faros de tu carta para elegirlos con un toque", nivel: "PY", disponible: true },
+  { id: "faros", titulo: "Mis faros", resumen: "Faros de tu carta para elegirlos con un toque", nivel: "PER", disponible: true },
   { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
   { id: "ortodromica", titulo: "Ortodrómica", resumen: "Rumbo inicial, distancia y vértice", nivel: "CY", disponible: true },

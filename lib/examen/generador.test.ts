@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { TEMAS, generarPregunta, temasDeNivel } from "./generador";
+import { TEMAS, esTemaCarta, generarPregunta, temasDeNivel } from "./generador";
+import { FAROS_PRUEBA } from "./carta.fixtures";
 
 describe("modo examen: generador", () => {
   for (const { id } of TEMAS) {
     it(`${id}: 300 preguntas válidas`, () => {
       for (let semilla = 1; semilla <= 300; semilla++) {
-        const p = generarPregunta(id, semilla * 104729);
+        const p = generarPregunta(id, semilla * 104729, esTemaCarta(id) ? FAROS_PRUEBA : []);
         expect(p.opciones).toHaveLength(4);
         expect(p.opciones.filter((o) => o.correcta)).toHaveLength(1);
         expect(new Set(p.opciones.map((o) => o.texto)).size).toBe(4);
