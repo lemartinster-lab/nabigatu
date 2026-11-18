@@ -5,12 +5,14 @@ import {
   corregirExamenPnb,
   generarExamenPnb,
   generarPracticaPnb,
+  generarRepasoPnb,
   MAX_ERRORES,
   TOTAL_PREGUNTAS,
   UNIDADES_PNB,
   type PreguntaMostrada,
 } from "./examen";
 import { comprobarAlcance, LIMITE_PNB } from "../ln/moto";
+import { ACIERTOS_PARA_QUITAR, anotarRespuesta, filtrarFallos } from "./fallos";
 
 describe("banco de preguntas del PNB", () => {
   it("cada pregunta tiene cuatro respuestas distintas, explicación e id único", () => {
@@ -123,5 +125,39 @@ describe("atribuciones y límite del PNB", () => {
     const destino = { lat: 28.0 + 4 / 60, lon: -16.0 };
     expect(comprobarAlcance(abrigo, destino, undefined, LIMITE_PNB).dentro).toBe(true);
     expect(comprobarAlcance(abrigo, destino).dentro).toBe(false);
+  });
+});
+
+describe("repasar mis fallos", () => {
+  it("un fallo entra en la lista y sale tras dos aciertos seguidos", () => {
+    let f = anotarRespuesta({}, "bal-norte", false);
+    expect(f).toEqual({ "bal-norte": 0 });
+    f = anotarRespuesta(f, "bal-norte", true);
+    expect(f).toEqual({ "bal-norte": 1 });
+    f = anotarRespuesta(f, "bal-norte", true);
+    expect(f).toEqual({});
+  });
+
+  it("un fallo en medio devuelve la racha a cero", () => {
+    let f = anotarRespuesta({}, "bal-sur", false);
+    f = anotarRespuesta(f, "bal-sur", true);
+    f = anotarRespuesta(f, "bal-sur", false);
+    expect(f["bal-sur"]).toBe(0);
+    expect(ACIERTOS_PARA_QUITAR).toBe(2);
+  });
+
+  it("acertar una pregunta que no estaba en la lista no la añade", () => {
+    expect(anotarRespuesta({}, "rip-cruce", true)).toEqual({});
+  });
+
+  it("lo leído del navegador se limpia: ids desconocidos y valores raros fuera", () => {
+    expect(filtrarFallos({ "bal-norte": 1, "no-existe": 0, "rip-cruce": "x", "rip-alcance": 5 })).toEqual({ "bal-norte": 1 });
+    expect(filtrarFallos(null)).toEqual({});
+    expect(filtrarFallos([1, 2])).toEqual({});
+  });
+
+  it("el repaso trae justo las preguntas de la lista", () => {
+    const r = generarRepasoPnb(["bal-norte", "rip-cruce", "no-existe"], 3);
+    expect(r.map((p) => p.id).sort()).toEqual(["bal-norte", "rip-cruce"]);
   });
 });

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ATRIBUCIONES_PNB, PNB_REVISADO } from "@/lib/pnb/atribuciones";
 import {
   corregirExamenPnb,
   DURACION_MINUTOS,
   generarExamenPnb,
   generarPracticaPnb,
+  generarRepasoPnb,
   MAX_ERRORES,
   TOTAL_PREGUNTAS,
   UNIDADES_PNB,
@@ -14,6 +15,7 @@ import {
   type PreguntaMostrada,
 } from "@/lib/pnb/examen";
 import type { UnidadPnb } from "@/lib/pnb/preguntas";
+import { ACIERTOS_PARA_QUITAR, leerFallos, registrarRespuestas, suscribirFallos } from "@/lib/pnb/fallos";
 import { Segmentado } from "../campos";
 
 const LETRAS = ["a", "b", "c", "d"];
@@ -94,8 +96,23 @@ function Opciones({
   );
 }
 
-function Practica({ unidad }: { unidad: UnidadPnb }) {
-  const [preguntas, setPreguntas] = useState(() => generarPracticaPnb(unidad, semillaNueva()));
+/** Lista de fallos guardada en el navegador, actualizada si cambia. */
+function useFallos() {
+  const [ids, setIds] = useState<string[]>([]);
+  useEffect(() => {
+    const leer = () => setIds(Object.keys(leerFallos()));
+    leer();
+    return suscribirFallos(leer);
+  }, []);
+  return ids;
+}
+
+/**
+ * Ronda de preguntas con la corrección al responder. Cada respuesta se anota en
+ * «Mis fallos»: los fallos entran en la lista y los aciertos de la lista suman racha.
+ */
+function Ronda({ generar, titulo }: { generar: () => PreguntaMostrada[]; titulo: (p: PreguntaMostrada) => string }) {
+  const [preguntas, setPreguntas] = useState(generar);
   const [i, setI] = useState(0);
   const [elegida, setElegida] = useState<number | null>(null);
   const [marcador, setMarcador] = useState({ aciertos: 0, total: 0 });
@@ -105,23 +122,33 @@ function Practica({ unidad }: { unidad: UnidadPnb }) {
   const responder = (k: number) => {
     if (elegida !== null) return;
     setElegida(k);
+    registrarRespuestas([{ id: p.id, acierto: k === p.correcta }]);
     setMarcador((m) => ({ aciertos: m.aciertos + (k === p.correcta ? 1 : 0), total: m.total + 1 }));
   };
   const reiniciar = () => {
-    setPreguntas(generarPracticaPnb(unidad, semillaNueva()));
+    setPreguntas(generar());
     setI(0);
     setElegida(null);
     setMarcador({ aciertos: 0, total: 0 });
   };
 
+  if (preguntas.length === 0) {
+    return (
+      <section className="rounded-2xl bg-emerald-50 p-4 text-emerald-950 ring-1 ring-emerald-200">
+        No tienes fallos pendientes. Cuando falles una pregunta en el examen de prueba o en la práctica, aparecerá aquí hasta que la
+        aciertes {ACIERTOS_PARA_QUITAR} veces seguidas.
+      </section>
+    );
+  }
+
   if (fin) {
     return (
       <section className="flex flex-col gap-3 rounded-2xl bg-white p-4 ring-1 ring-slate-200">
         <p className="font-semibold text-sky-950">
-          Has terminado {nombreUnidad(unidad)}: {marcador.aciertos} de {marcador.total} aciertos.
+          Ronda terminada: {marcador.aciertos} de {marcador.total} aciertos.
         </p>
         <button type="button" onClick={reiniciar} className="self-start rounded-xl bg-sky-900 px-5 py-3 font-semibold text-white hover:bg-sky-800">
-          Repetir con otro orden
+          Otra ronda
         </button>
       </section>
     );
@@ -129,8 +156,8 @@ function Practica({ unidad }: { unidad: UnidadPnb }) {
 
   return (
     <section className="flex flex-col gap-4 rounded-2xl bg-white p-4 ring-1 ring-slate-200" aria-label="Pregunta">
-      <div className="flex justify-between text-xs font-semibold uppercase tracking-wide text-sky-700">
-        <span>{nombreUnidad(unidad)}</span>
+      <div className="flex justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-sky-700">
+        <span>{titulo(p)}</span>
         <span aria-live="polite">
           {i + 1} de {preguntas.length} · {marcador.aciertos} aciertos
         </span>
@@ -266,7 +293,10 @@ function ExamenPrueba() {
         ) : (
           <button
             type="button"
-            onClick={() => setCorreccion(corregirExamenPnb(preguntas, respuestas))}
+            onClick={() => {
+              registrarRespuestas(preguntas.map((q, j) => ({ id: q.id, acierto: respuestas[j] === q.correcta })));
+              setCorreccion(corregirExamenPnb(preguntas, respuestas));
+            }}
             className="rounded-xl bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800"
           >
             Corregir examen
@@ -280,12 +310,14 @@ function ExamenPrueba() {
   );
 }
 
-type Modo = "examen" | UnidadPnb;
+type Modo = "examen" | "practica" | "repaso";
 
 export function TestPnb() {
   const [modo, setModo] = useState<Modo>("examen");
+  const [tema, setTema] = useState<UnidadPnb>("balizamiento");
   const [clave, setClave] = useState(0);
-  const tipo = modo === "examen" ? "examen" : "practica";
+  const fallos = useFallos();
+  const otraVez = () => setClave((k) => k + 1);
 
   return (
     <>
@@ -297,23 +329,24 @@ export function TestPnb() {
       <Segmentado
         etiqueta="Qué quieres hacer"
         opciones={[
-          { valor: "examen", etiqueta: "Examen de prueba" },
-          { valor: "practica", etiqueta: "Practicar un tema" },
+          { valor: "examen", etiqueta: "Examen" },
+          { valor: "practica", etiqueta: "Por tema" },
+          { valor: "repaso", etiqueta: `Mis fallos (${fallos.length})` },
         ]}
-        valor={tipo}
+        valor={modo}
         onChange={(v) => {
-          setModo(v === "examen" ? "examen" : "balizamiento");
-          setClave((k) => k + 1);
+          setModo(v);
+          otraVez();
         }}
       />
-      {modo !== "examen" && (
+      {modo === "practica" && (
         <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
           Tema
           <select
-            value={modo}
+            value={tema}
             onChange={(e) => {
-              setModo(e.target.value as UnidadPnb);
-              setClave((k) => k + 1);
+              setTema(e.target.value as UnidadPnb);
+              otraVez();
             }}
             className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-base"
           >
@@ -325,7 +358,17 @@ export function TestPnb() {
           </select>
         </label>
       )}
-      {modo === "examen" ? <ExamenPrueba key={clave} /> : <Practica key={`${modo}-${clave}`} unidad={modo} />}
+      {modo === "repaso" && (
+        <p className="text-sm text-slate-600">
+          Las preguntas que has fallado, en cualquier examen o práctica. Cada una sale de la lista cuando la aciertas{" "}
+          {ACIERTOS_PARA_QUITAR} veces seguidas; si la vuelves a fallar, empieza de cero. Se guardan en este navegador.
+        </p>
+      )}
+      {modo === "examen" && <ExamenPrueba key={clave} />}
+      {modo === "practica" && <Ronda key={`${tema}-${clave}`} generar={() => generarPracticaPnb(tema, semillaNueva())} titulo={() => nombreUnidad(tema)} />}
+      {modo === "repaso" && (
+        <Ronda key={`repaso-${clave}`} generar={() => generarRepasoPnb(Object.keys(leerFallos()), semillaNueva())} titulo={(p) => nombreUnidad(p.unidad)} />
+      )}
     </>
   );
 }
