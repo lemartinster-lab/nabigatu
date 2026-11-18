@@ -6,6 +6,11 @@ import { leerFaros, suscribirFaros, type Faro } from "@/lib/faros";
 import { aGradosMinutos } from "@/lib/nucleo/angulos";
 import { separarHemisferio, type TipoCoordenada } from "@/lib/nucleo/coordenadas";
 
+/** Texto de ejemplo dentro de la casilla: con «p. ej.» delante para que no se confunda con un dato escrito. */
+function ejemplo(texto?: string): string | undefined {
+  return texto ? `p. ej. ${texto}` : undefined;
+}
+
 interface CampoProps {
   etiqueta: string;
   valor: string;
@@ -22,10 +27,10 @@ export function Campo({ etiqueta, valor, onChange, placeholder, ayuda, unidad, m
       <span className="text-sm font-medium text-slate-700">{etiqueta}</span>
       <div className="flex items-stretch overflow-hidden rounded-xl border border-slate-300 bg-white focus-within:border-sky-600 focus-within:ring-2 focus-within:ring-sky-600/20">
         <input
-          className="w-0 min-w-0 flex-1 px-3 py-2.5 text-lg text-slate-900 outline-none placeholder:text-slate-400"
+          className="w-0 min-w-0 flex-1 px-3 py-2.5 text-lg text-slate-900 outline-none placeholder:italic placeholder:text-slate-400"
           value={valor}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={ejemplo(placeholder)}
           inputMode={modo}
           autoComplete="off"
           spellCheck={false}
@@ -124,10 +129,10 @@ export function CampoConSigno({
       <span className="text-sm font-medium text-slate-700">{etiqueta}</span>
       <div className="flex gap-2">
         <input
-          className="w-0 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 outline-none placeholder:text-slate-400 focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20"
+          className="w-0 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 outline-none placeholder:italic placeholder:text-slate-400 focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20"
           value={valor}
           onChange={(e) => cambiar(e.target.value)}
-          placeholder={placeholder}
+          placeholder={ejemplo(placeholder)}
           inputMode={tipo ? "text" : "decimal"}
           autoComplete="off"
           aria-label={etiqueta}
