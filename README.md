@@ -1,8 +1,19 @@
 # Nabigatu
 
-**Nabigatu** («navegar» en euskera) es una calculadora de navegación para las titulaciones náuticas de recreo españolas: PER, Patrón de Yate y Capitán de Yate. Cada cálculo da el resultado al momento y el **desarrollo paso a paso**, como se resuelve en el examen.
+**Nabigatu** («navegar» en euskera) es una calculadora de navegación para las titulaciones náuticas de recreo españolas: licencia de navegación («titulín»), PER, Patrón de Yate y Capitán de Yate. Cada cálculo da el resultado al momento y el **desarrollo paso a paso**, como se resuelve en el examen.
 
 > **Aviso:** es una herramienta de apoyo y de estudio. No sustituye a la carta náutica, a los instrumentos de a bordo ni al criterio del patrón.
+
+## Licencia de navegación («titulín») y motos de agua
+
+| Módulo | Qué calcula |
+|--------|-------------|
+| Horas de luz | Orto, ocaso y horario legal de las motos náuticas (de una hora después del orto a una hora antes del ocaso) |
+| ¿Puedo ir hasta allí? | Distancia desde el puerto o abrigo frente al límite de 2 millas de la licencia |
+| Combustible y autonomía | Máximo alejamiento con la regla del tercio |
+| Normas para motos de agua | Lo esencial, cada norma con su artículo del BOE |
+
+Fuentes: Real Decreto 875/2014 (art. 11.1) y Real Decreto 259/2002 (arts. 4, 5, 10 y 11), textos consolidados del BOE actualizados el 30/12/2025, revisados el 18/11/2026. El orto y el ocaso se han contrastado con PyEphem (menos de 3 segundos de diferencia).
 
 ## Fase 1: PER (disponible)
 
@@ -81,6 +92,7 @@ Lista de faros con la situación medida por el usuario en su propia carta, guard
 | Ruta | Contenido |
 |------|-----------|
 | `lib/nucleo/` | Común a todos los niveles: ángulos, vectores, unidades y tiempo |
+| `lib/ln/` | Licencia de navegación y motos de agua |
 | `lib/per/` | Cálculos del PER |
 | `lib/py/` | Cálculos del Patrón de Yate |
 | `lib/cy/` | Cálculos del Capitán de Yate |
@@ -88,7 +100,7 @@ Lista de faros con la situación medida por el usuario en su propia carta, guard
 | `lib/modulos.ts` | Catálogo de módulos por titulación |
 | `lib/cy/efemerides.ts`, `lib/cy/catalogo-estrellas.ts`, `lib/cy/almanaque.ts` | Almanaque calculado: efemérides, página del día, fenómenos e incrementos |
 | `lib/faros.ts`, `components/MisFaros.tsx` | Mis faros |
-| `components/per/`, `components/py/`, `components/cy/` | Formularios de cada módulo |
+| `components/ln/`, `components/per/`, `components/py/`, `components/cy/` | Formularios de cada módulo |
 | `components/examen/` | Modo examen |
 | `components/campos.tsx` | Campos, selectores y presentación de resultados |
 | `lib/**/*.test.ts` | Tests con ejercicios tipo examen |

@@ -3,9 +3,15 @@
  * Capitán de Yate) es añadir entradas aquí y sus cálculos en lib/<nivel>/.
  */
 
-export type Nivel = "PER" | "PY" | "CY";
+export type Nivel = "LN" | "PER" | "PY" | "CY";
 
 export const NIVELES: { id: Nivel; nombre: string; corto: string; descripcion: string }[] = [
+  {
+    id: "LN",
+    nombre: "Licencia de navegación («titulín»)",
+    corto: "Licencia de navegación",
+    descripcion: "Motos de agua y embarcaciones pequeñas: horario, límite de 2 millas, combustible y normas",
+  },
   {
     id: "PER",
     nombre: "Patrón de Embarcaciones de Recreo",
@@ -35,6 +41,10 @@ export interface Modulo {
 }
 
 export const MODULOS: Modulo[] = [
+  { id: "luz", titulo: "Horas de luz", resumen: "Orto, ocaso y horario de las motos de agua", nivel: "LN", disponible: true },
+  { id: "alcance", titulo: "¿Puedo ir hasta allí?", resumen: "Límite de 2 millas de la licencia", nivel: "LN", disponible: true },
+  { id: "autonomia", titulo: "Combustible y autonomía", resumen: "Regla del tercio", nivel: "LN", disponible: true },
+  { id: "normas-moto", titulo: "Normas para motos de agua", resumen: "Lo esencial, con su artículo del BOE", nivel: "LN", disponible: true },
   { id: "examen", titulo: "Modo examen", resumen: "Ejercicios tipo test con la solución", nivel: "PER", disponible: true },
   { id: "rumbo-a-dar", titulo: "Rumbo a dar al timonel", resumen: "Problema completo: corriente, viento y aguja", nivel: "PER", disponible: true },
   { id: "ct", titulo: "Corrección total", resumen: "Ct = dm + Δ", nivel: "PER", disponible: true },
@@ -63,7 +73,7 @@ export const MODULOS: Modulo[] = [
   { id: "recta-altura", titulo: "Recta de altura", resumen: "ae, Z, Δa y situación por dos rectas", nivel: "CY", disponible: true },
 ];
 
-const ORDEN: Nivel[] = ["PER", "PY", "CY"];
+const ORDEN: Nivel[] = ["LN", "PER", "PY", "CY"];
 
 /** Una titulación incluye los módulos de las titulaciones inferiores. */
 export function modulosDeNivel(nivel: Nivel): Modulo[] {
