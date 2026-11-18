@@ -62,6 +62,14 @@ Calcula el horario en Greenwich y la declinación del Sol (con su semidiámetro)
 
 Contrastado con astropy (error máximo de 0,07′ en el horario del Sol entre 2019 y 2030) y con ocho ejercicios de estrellas de exámenes oficiales de Capitán de Yate (Algol, Denebola, Fomalhaut, Rigel, Mintaka, Vindemiatrix, Alnitak y Acamar): en todos, el resultado es una de las opciones del examen, siete de ellos a la décima de minuto exacta. Están incluidos como tests.
 
+Tiene tres pestañas:
+
+- **Un instante**: hG, declinación, horario del lugar, azimut y altura estimada para una hora UT.
+- **Página del día**: lo que trae cada página del Almanaque impreso. Tabla hora a hora (0 h a 24 h UT) del hG y la declinación del Sol y del hG del punto Aries; paso del Sol por el meridiano de Greenwich (PMG), semidiámetro, v y d; crepúsculos náutico y civil, salida y puesta para las latitudes de 52° N a 40° S en el meridiano 0°, y también para una situación concreta; ángulo sidéreo y declinación de las estrellas.
+- **Incrementos**: la tabla de incrementos de horario del Sol (15°/h) y de Aries (15° 02,46′/h) por minutos y segundos, para interpolar como en el examen.
+
+Contrastado con el Almanaque Náutico 2026 de nauticalalmanac.it: en los 354 días comparados a las 0 h UT, el hG y la declinación del Sol y el hG de Aries difieren como mucho 0,08′; el PMG coincide al segundo y los crepúsculos, la salida y la puesta al minuto. Con la hoja de cálculo 2027 de la misma fuente, los fenómenos en una situación concreta difieren menos de 0,3 minutos. Los valores de referencia están en `lib/cy/almanaque.test.ts`; los datos del Almanaque no se incluyen en la app, porque su redistribución no está permitida.
+
 ## Mis faros
 
 Lista de faros con la situación medida por el usuario en su propia carta, guardada en el navegador. Cualquier campo de posición permite elegirlos con un toque. La app no trae coordenadas de serie: cada edición de la carta del examen puede diferir alguna décima de minuto.
@@ -76,7 +84,7 @@ Lista de faros con la situación medida por el usuario en su propia carta, guard
 | `lib/cy/` | Cálculos del Capitán de Yate |
 | `lib/examen/` | Generador de ejercicios tipo test |
 | `lib/modulos.ts` | Catálogo de módulos por titulación |
-| `lib/cy/efemerides.ts`, `lib/cy/catalogo-estrellas.ts` | Almanaque calculado |
+| `lib/cy/efemerides.ts`, `lib/cy/catalogo-estrellas.ts`, `lib/cy/almanaque.ts` | Almanaque calculado: efemérides, página del día, fenómenos e incrementos |
 | `lib/faros.ts`, `components/MisFaros.tsx` | Mis faros |
 | `components/per/`, `components/py/`, `components/cy/` | Formularios de cada módulo |
 | `components/examen/` | Modo examen |
