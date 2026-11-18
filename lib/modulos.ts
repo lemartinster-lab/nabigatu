@@ -3,7 +3,7 @@
  * Capitán de Yate) es añadir entradas aquí y sus cálculos en lib/<nivel>/.
  */
 
-export type Nivel = "LN" | "PER" | "PY" | "CY";
+export type Nivel = "LN" | "PNB" | "PER" | "PY" | "CY";
 
 export const NIVELES: { id: Nivel; nombre: string; corto: string; descripcion: string }[] = [
   {
@@ -11,6 +11,12 @@ export const NIVELES: { id: Nivel; nombre: string; corto: string; descripcion: s
     nombre: "Licencia de navegación («titulín»)",
     corto: "Licencia de navegación",
     descripcion: "Motos de agua y embarcaciones pequeñas: horario, límite de 2 millas, combustible y normas",
+  },
+  {
+    id: "PNB",
+    nombre: "Patrón para Navegación Básica",
+    corto: "PNB",
+    descripcion: "Hasta 8 metros y 5 millas de un puerto o abrigo: atribuciones y test del examen, además del titulín",
   },
   {
     id: "PER",
@@ -45,6 +51,8 @@ export const MODULOS: Modulo[] = [
   { id: "alcance", titulo: "¿Puedo ir hasta allí?", resumen: "Límite de 2 millas de la licencia", nivel: "LN", disponible: true },
   { id: "autonomia", titulo: "Combustible y autonomía", resumen: "Regla del tercio", nivel: "LN", disponible: true },
   { id: "normas-moto", titulo: "Normas para motos de agua", resumen: "Lo esencial, con su artículo del BOE", nivel: "LN", disponible: true },
+  { id: "atribuciones-pnb", titulo: "Qué te permite el PNB", resumen: "Barcos, distancia, edad, examen y prácticas, con su artículo", nivel: "PNB", disponible: true },
+  { id: "test-pnb", titulo: "Test del PNB", resumen: "Examen de prueba de 27 preguntas y práctica por temas", nivel: "PNB", disponible: true },
   { id: "examen", titulo: "Modo examen", resumen: "Ejercicios tipo test con la solución", nivel: "PER", disponible: true },
   { id: "rumbo-a-dar", titulo: "Rumbo a dar al timonel", resumen: "Problema completo: corriente, viento y aguja", nivel: "PER", disponible: true },
   { id: "ct", titulo: "Corrección total", resumen: "Ct = dm + Δ", nivel: "PER", disponible: true },
@@ -73,7 +81,7 @@ export const MODULOS: Modulo[] = [
   { id: "recta-altura", titulo: "Recta de altura", resumen: "ae, Z, Δa y situación por dos rectas", nivel: "CY", disponible: true },
 ];
 
-const ORDEN: Nivel[] = ["LN", "PER", "PY", "CY"];
+export const ORDEN: Nivel[] = ["LN", "PNB", "PER", "PY", "CY"];
 
 /** Una titulación incluye los módulos de las titulaciones inferiores. */
 export function modulosDeNivel(nivel: Nivel): Modulo[] {

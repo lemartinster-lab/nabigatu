@@ -17,18 +17,40 @@ import { formatoRumbo } from "../nucleo/angulos";
 export const LIMITE_LICENCIA_MILLAS = 2;
 export const METROS_POR_MILLA = 1852;
 
+/** Límite de alejamiento de una titulación medido desde un puerto, marina o lugar de abrigo. */
+export interface LimiteAlcance {
+  millas: number;
+  /** Con artículo, para las frases: «la licencia de navegación». */
+  titulo: string;
+  fuente: string;
+}
+
+export const LIMITE_LICENCIA: LimiteAlcance = {
+  millas: LIMITE_LICENCIA_MILLAS,
+  titulo: "la licencia de navegación",
+  fuente: "RD 875/2014, art. 11.1",
+};
+
+/** Patrón para Navegación Básica: 5 millas de un puerto, marina o lugar de abrigo (RD 875/2014, arts. 8 y 9). */
+export const LIMITE_PNB: LimiteAlcance = {
+  millas: 5,
+  titulo: "el Patrón para Navegación Básica (PNB)",
+  fuente: "RD 875/2014, art. 8",
+};
+
 export function comprobarAlcance(
   abrigo: Posicion,
   destino: Posicion,
   velocidad?: number,
+  limite: LimiteAlcance = LIMITE_LICENCIA,
 ): Resultado & { distancia: number; rumbo: number; dentro: boolean; margen: number } {
   const r = rumboYDistancia(abrigo, destino);
   const distancia = r.distancia;
-  const dentro = distancia <= LIMITE_LICENCIA_MILLAS + 1e-9;
-  const margen = LIMITE_LICENCIA_MILLAS - distancia;
+  const dentro = distancia <= limite.millas + 1e-9;
+  const margen = limite.millas - distancia;
   const pasos = [
     `Distancia desde el puerto, marina o abrigo hasta el punto: ${formatoNumero(distancia, 2)} millas (${formatoNumero(distancia * METROS_POR_MILLA, 0)} m), al ${formatoRumbo(r.rumbo)}`,
-    `Límite de la licencia de navegación: ${LIMITE_LICENCIA_MILLAS} millas en cualquier dirección (RD 875/2014, art. 11.1)`,
+    `Límite de ${limite.titulo}: ${limite.millas} millas en cualquier dirección (${limite.fuente})`,
     dentro
       ? `Dentro del límite: quedan ${formatoNumero(margen, 2)} millas de margen`
       : `FUERA del límite: te pasas en ${formatoNumero(-margen, 2)} millas`,

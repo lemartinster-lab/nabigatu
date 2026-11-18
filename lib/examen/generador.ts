@@ -75,7 +75,7 @@ export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "recta", nombre: "Recta de altura: altura estimada y azimut", nivel: "CY" },
 ];
 
-const ORDEN: Nivel[] = ["LN", "PER", "PY", "CY"];
+const ORDEN: Nivel[] = ["LN", "PNB", "PER", "PY", "CY"];
 export function temasDeNivel(nivel: Nivel) {
   return TEMAS.filter((t) => ORDEN.indexOf(t.nivel) <= ORDEN.indexOf(nivel));
 }
