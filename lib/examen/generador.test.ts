@@ -23,5 +23,6 @@ describe("modo examen: generador", () => {
   it("los temas se filtran por titulación", () => {
     expect(temasDeNivel("PER").every((t) => t.nivel === "PER")).toBe(true);
     expect(temasDeNivel("PY").length).toBeGreaterThan(temasDeNivel("PER").length);
+    expect(temasDeNivel("CY").length).toBeGreaterThan(temasDeNivel("PY").length);
   });
 });

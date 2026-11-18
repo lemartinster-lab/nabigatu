@@ -43,7 +43,7 @@ export function ModoExamen({ nivel }: { nivel: Nivel }) {
       <p className="text-sm text-slate-600">
         Ejercicios tipo test generados al azar, con cuatro opciones como en el examen. Las respuestas incorrectas son los
         errores más habituales, y al responder verás por qué. Los ejercicios que necesitan la carta del Estrecho no se
-        generan aquí.
+        generan aquí, y en los de astronomía el enunciado ya incluye los datos del Almanaque.
       </p>
 
       <div className="flex flex-wrap items-end gap-3">
@@ -54,7 +54,7 @@ export function ModoExamen({ nivel }: { nivel: Nivel }) {
             onChange={(e) => setTema(e.target.value as Tema | "todos")}
             className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-base"
           >
-            <option value="todos">Todos los temas ({nivel === "PER" ? "PER" : "PER y Patrón de Yate"})</option>
+            <option value="todos">Todos los temas ({nivel === "PER" ? "PER" : nivel === "PY" ? "PER y Patrón de Yate" : "todas las titulaciones"})</option>
             {temas.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.nombre}

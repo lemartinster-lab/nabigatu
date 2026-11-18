@@ -16,6 +16,11 @@ import { corrienteDesconocida, efectoCorriente, rumboADar } from "../per/viento-
 import { estima, rumboYDistancia } from "../py/estima";
 import { formatoHoraMin, horaParaSonda, sondaAHora, type Extremo } from "../py/mareas";
 import { llegarAHora } from "../py/llegada";
+import { ortodromica } from "../cy/ortodromica";
+import { convertirHora, formatoInstante } from "../cy/tiempo";
+import { corregirAltura, formatoAltura } from "../cy/alturas";
+import { formatoDeclinacion, formatoHorario } from "../cy/astros";
+import { alturaYAzimut, latitudMeridiana, rectaDeAltura } from "../cy/astronomica";
 
 export type Tema =
   | "rumbos"
@@ -28,7 +33,13 @@ export type Tema =
   | "mareas-hora"
   | "loxodromica"
   | "estima"
-  | "llegada";
+  | "llegada"
+  | "orto-distancia"
+  | "orto-rumbo"
+  | "horas"
+  | "meridiana"
+  | "altura"
+  | "recta";
 
 export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "rumbos", nombre: "Corrección total y rumbos", nivel: "PER" },
@@ -42,6 +53,12 @@ export const TEMAS: { id: Tema; nombre: string; nivel: Nivel }[] = [
   { id: "loxodromica", nombre: "Loxodrómica: rumbo directo", nivel: "PY" },
   { id: "estima", nombre: "Situación por estima", nivel: "PY" },
   { id: "llegada", nombre: "Llegar a una hora con corriente", nivel: "PY" },
+  { id: "orto-distancia", nombre: "Ortodrómica: distancia", nivel: "CY" },
+  { id: "orto-rumbo", nombre: "Ortodrómica: rumbo inicial", nivel: "CY" },
+  { id: "horas", nombre: "Hora civil del lugar", nivel: "CY" },
+  { id: "altura", nombre: "Corrección de alturas", nivel: "CY" },
+  { id: "meridiana", nombre: "Latitud por meridiana del Sol", nivel: "CY" },
+  { id: "recta", nombre: "Recta de altura: altura estimada y azimut", nivel: "CY" },
 ];
 
 const ORDEN: Nivel[] = ["PER", "PY", "CY"];
@@ -515,6 +532,214 @@ function preguntaLlegada(az: Azar): Pregunta {
   };
 }
 
+
+// ---------- Capitán de Yate ----------
+
+function posicionOceanica(az: Azar) {
+  return {
+    lat: az.signo() * (az.entero(0, 60) + az.entero(0, 59) / 60),
+    lon: az.signo() * (az.entero(0, 179) + az.entero(0, 59) / 60),
+  };
+}
+
+function parOrtodromico(az: Azar) {
+  const a = posicionOceanica(az);
+  let b = posicionOceanica(az);
+  // Derrotas largas como en el examen (entre ~1500 y ~9000 millas)
+  for (let i = 0; i < 30; i++) {
+    const d = ortodromica(a, b).distancia;
+    if (d > 1500 && d < 9500) break;
+    b = posicionOceanica(az);
+  }
+  return { a, b };
+}
+
+const textoPos = (p: { lat: number; lon: number }) => `${formatoLatitud(p.lat)}, ${formatoLongitud(p.lon)}`;
+
+function preguntaOrtoDistancia(az: Azar): Pregunta {
+  const { a, b } = parOrtodromico(az);
+  const r = ortodromica(a, b);
+  const lox = rumboYDistancia(a, b).distancia;
+  const latCambiada = ortodromica(a, { ...b, lat: -b.lat }).distancia;
+  const fmt = (d: number) => `${Math.round(d)}′`;
+  return {
+    tema: "orto-distancia",
+    enunciado: [`Calcular la distancia ortodrómica, redondeada a la milla, entre los puntos ${textoPos(a)} y ${textoPos(b)}.`],
+    opciones: opciones(
+      az,
+      fmt(r.distancia),
+      [
+        { texto: fmt(lox), error: "Es la distancia loxodrómica, no la ortodrómica (que siempre es menor o igual)." },
+        { texto: fmt(21600 - r.distancia), error: "Es el arco mayor del círculo máximo (21.600′ − D): se ha ido por el lado largo." },
+        { texto: fmt(latCambiada), error: "Se ha tomado la latitud de llegada con el signo cambiado (N/S)." },
+      ],
+      () => fmt(r.distancia + az.signo() * az.entero(150, 900)),
+    ),
+    solucion: r.pasos,
+  };
+}
+
+function preguntaOrtoRumbo(az: Azar): Pregunta {
+  const { a, b } = parOrtodromico(az);
+  const r = ortodromica(a, b);
+  const lox = rumboYDistancia(a, b).rumbo;
+  const fmt = (x: number) => `${String(Math.round(normalizar360(x)) % 360).padStart(3, "0")}°`;
+  return {
+    tema: "orto-rumbo",
+    enunciado: [`Calcular el rumbo inicial para navegar por ortodrómica desde el punto ${textoPos(a)} hasta el punto ${textoPos(b)}.`],
+    opciones: opciones(
+      az,
+      fmt(r.rumboInicial),
+      [
+        { texto: fmt(360 - r.rumboInicial), error: "Se ha cambiado el sentido E/W del rumbo: revisa hacia dónde va la diferencia de longitud." },
+        { texto: fmt(180 - r.rumboInicial), error: "Error al pasar el rumbo cuadrantal (N/S…E/W) a circular." },
+        { texto: fmt(lox), error: "Es el rumbo loxodrómico; el ortodrómico cambia a lo largo de la derrota." },
+      ],
+      () => fmt(r.rumboInicial + az.signo() * az.entero(15, 40)),
+    ),
+    solucion: r.pasos,
+  };
+}
+
+function preguntaHoras(az: Azar): Pregunta {
+  const lon = az.signo() * (az.entero(20, 179) + az.entero(0, 59) / 60 + az.entero(0, 59) / 3600);
+  const base = Date.UTC(2026, az.entero(0, 11), az.entero(1, 28), az.entero(0, 23), az.entero(0, 59), az.entero(0, 59));
+  const r = convertirHora(base, "HcG", lon, 0);
+  const restando = base - (lon / 15) * 3_600_000;
+  const mismaFecha = (() => {
+    const t = new Date(r.HcL);
+    const g = new Date(base);
+    return Date.UTC(g.getUTCFullYear(), g.getUTCMonth(), g.getUTCDate(), t.getUTCHours(), t.getUTCMinutes(), t.getUTCSeconds());
+  })();
+  return {
+    tema: "horas",
+    enunciado: [
+      `Nos encontramos en longitud ${formatoLongitud(lon)} (${Math.abs(lon).toFixed(4).replace(".", ",")}°).`,
+      `Siendo HcG = ${formatoInstante(base)}, calcular la hora civil del lugar (HcL) y la fecha.`,
+    ],
+    opciones: opciones(
+      az,
+      formatoInstante(r.HcL),
+      [
+        { texto: formatoInstante(restando), error: `Se ha aplicado la longitud al revés: al ${lon >= 0 ? "E se suma" : "W se resta"}.` },
+        { texto: formatoInstante(mismaFecha), error: "La hora es correcta pero se ha olvidado el cambio de fecha." },
+        { texto: formatoInstante(r.HZ), error: "Es la hora de zona (huso horario entero), no la hora civil del lugar." },
+      ],
+      () => formatoInstante(r.HcL + az.signo() * az.entero(4, 40) * 60_000),
+    ),
+    solucion: r.pasos,
+  };
+}
+
+function datosSol(az: Azar) {
+  return {
+    dec: az.signo() * (az.entero(0, 23) + az.entero(0, 59) / 60 + az.entero(0, 9) / 600),
+    sd: az.elegir([15.8, 15.9, 16.0, 16.1, 16.2, 16.3]),
+  };
+}
+
+function preguntaAltura(az: Azar): Pregunta {
+  const ai = az.entero(15, 70) + az.entero(0, 599) / 600;
+  const ci = az.signo() * az.entero(1, 30) / 10;
+  const eo = az.elegir([2, 2.5, 3, 4, 5, 6, 8]);
+  const { sd } = datosSol(az);
+  const r = corregirAltura({ ai, ci, eo, astro: "sol-li", sd });
+  const sinDep = corregirAltura({ ai, ci, eo: 0, astro: "sol-li", sd }).av;
+  const ls = corregirAltura({ ai, ci, eo, astro: "sol-ls", sd }).av;
+  const ciMal = corregirAltura({ ai, ci: -ci, eo, astro: "sol-li", sd }).av;
+  return {
+    tema: "altura",
+    enunciado: [
+      `Se observa el Sol, limbo inferior, con altura instrumental Ai = ${formatoAltura(ai)}.`,
+      `Error de índice = ${Math.abs(ci).toFixed(1).replace(".", ",")}′ (${ci >= 0 ? "+" : "−"}). Elevación del observador: ${formatoNumero(eo, 1)} m. Semidiámetro (Almanaque): ${sd.toFixed(1).replace(".", ",")}′.`,
+      "Calcular la altura verdadera.",
+    ],
+    opciones: opciones(
+      az,
+      formatoAltura(r.av),
+      [
+        { texto: formatoAltura(sinDep), error: "No se ha restado la depresión del horizonte por la elevación del observador." },
+        { texto: formatoAltura(ls), error: "Se ha restado el semidiámetro: en el limbo inferior se suma." },
+        { texto: formatoAltura(ciMal), error: "Se ha aplicado el error de índice con el signo cambiado." },
+      ],
+      () => formatoAltura(r.av + (az.signo() * az.entero(2, 9)) / 60),
+    ),
+    solucion: r.pasos,
+  };
+}
+
+function preguntaMeridiana(az: Azar): Pregunta {
+  for (;;) {
+    const { dec, sd } = datosSol(az);
+    const lat = az.signo() * (az.entero(0, 60) + az.entero(0, 59) / 60);
+    if (Math.abs(lat - dec) < 8 || Math.abs(lat - dec) > 75) continue;
+    const eo = az.elegir([2, 3, 4, 5, 6]);
+    const ci = az.signo() * az.entero(0, 25) / 10;
+    // Altura instrumental coherente con la latitud real
+    const avReal = 90 - Math.abs(lat - dec);
+    const corr = corregirAltura({ ai: avReal, ci, eo, astro: "sol-li", sd }).correccionTotal;
+    const ai = Math.round((avReal - corr / 60) * 600) / 600;
+    const alt = corregirAltura({ ai, ci, eo, astro: "sol-li", sd });
+    const latEst = lat + az.signo() * az.entero(5, 25) / 60;
+    const r = latitudMeridiana(alt.av, dec, latEst);
+    const latMal = r.astroAl === "S" ? dec - r.z : dec + r.z;
+    const fmt = (l: number) => formatoLatitud(Math.round(l * 60) / 60);
+    const opts = opciones(
+      az,
+      fmt(r.lat),
+      [
+        { texto: fmt(Math.sign(r.lat || 1) * r.z), error: "Es la distancia cenital z = 90° − av; falta combinarla con la declinación." },
+        { texto: fmt(Math.sign(r.lat || 1) * alt.av), error: "Es la altura verdadera, no la latitud." },
+        ...(Math.abs(latMal) <= 90 ? [{ texto: fmt(latMal), error: "Se ha combinado z y la declinación con el signo equivocado: mira a qué lado pasa el Sol." }] : []),
+      ],
+      () => fmt(r.lat + (az.signo() * az.entero(15, 60)) / 60),
+    );
+    return {
+      tema: "meridiana",
+      enunciado: [
+        `En latitud de estima ${formatoLatitud(latEst)} se observa el Sol, limbo inferior, en el meridiano con Ai = ${formatoAltura(ai)}.`,
+        `Error de índice ${Math.abs(ci).toFixed(1).replace(".", ",")}′ (${ci >= 0 ? "+" : "−"}), elevación del observador ${eo} m.`,
+        `Datos del Almanaque: declinación del Sol ${formatoDeclinacion(dec)}, semidiámetro ${sd.toFixed(1).replace(".", ",")}′.`,
+        "Calcular la latitud por altura meridiana.",
+      ],
+      opciones: opts,
+      solucion: [...alt.pasos, "", ...r.pasos],
+    };
+  }
+}
+
+function preguntaRecta(az: Azar): Pregunta {
+  for (;;) {
+    const estima = posicionOceanica(az);
+    const dec = az.signo() * (az.entero(0, 60) + az.entero(0, 599) / 600);
+    const hG = az.entero(0, 359) + az.entero(0, 599) / 600;
+    const r = rectaDeAltura(estima, hG, dec);
+    if (r.ae < 12 || r.ae > 75) continue;
+    const latMal = alturaYAzimut(-estima.lat, r.hL, dec);
+    const hlMal = alturaYAzimut(estima.lat, normalizar360(hG - estima.lon), dec);
+    const fmt = (z: number, ae: number) => `Z = ${String(Math.round(normalizar360(z)) % 360).padStart(3, "0")}°, ae = ${formatoAltura(ae)}`;
+    return {
+      tema: "recta",
+      enunciado: [
+        `Desde la situación de estima ${textoPos(estima)} se observa un astro.`,
+        `Datos del Almanaque para la hora de la observación: hG = ${formatoHorario(hG)}, declinación ${formatoDeclinacion(dec)}.`,
+        "Calcular el azimut y la altura estimada.",
+      ],
+      opciones: opciones(
+        az,
+        fmt(r.z, r.ae),
+        [
+          { texto: fmt(360 - r.z, r.ae), error: "Azimut con el sentido E/W cambiado: si el horario del lugar es menor de 180°, el astro está al W." },
+          { texto: fmt(latMal.z, latMal.ae), error: "Se ha tomado la latitud con el signo cambiado (N/S)." },
+          { texto: fmt(hlMal.z, hlMal.ae), error: "Se ha aplicado la longitud al revés al calcular el horario del lugar (hL = hG + λ, λ al E positiva)." },
+        ],
+        () => fmt(r.z + az.signo() * az.entero(5, 20), r.ae + (az.signo() * az.entero(10, 40)) / 60),
+      ),
+      solucion: r.pasos,
+    };
+  }
+}
+
 const GENERADORES: Record<Tema, (az: Azar) => Pregunta> = {
   rumbos: preguntaRumbos,
   declinacion: preguntaDeclinacion,
@@ -527,6 +752,12 @@ const GENERADORES: Record<Tema, (az: Azar) => Pregunta> = {
   loxodromica: preguntaLoxodromica,
   estima: preguntaEstima,
   llegada: preguntaLlegada,
+  "orto-distancia": preguntaOrtoDistancia,
+  "orto-rumbo": preguntaOrtoRumbo,
+  horas: preguntaHoras,
+  altura: preguntaAltura,
+  meridiana: preguntaMeridiana,
+  recta: preguntaRecta,
 };
 
 /**

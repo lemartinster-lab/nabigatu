@@ -11,6 +11,7 @@ import { Mareas } from "./py/Mareas";
 import { Estima, LlegarAHora, Loxodromica } from "./py/Navegacion";
 import { Situacion } from "./py/Situacion";
 import { ModoExamen } from "./examen/ModoExamen";
+import { Alturas, Horas, HorarioAstro, Meridiana, Ortodromica, Polar, RectaAltura } from "./cy/Astronomia";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   examen: ModoExamen,
@@ -28,6 +29,13 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   loxodromica: Loxodromica,
   situacion: Situacion,
   llegada: LlegarAHora,
+  ortodromica: Ortodromica,
+  horas: Horas,
+  horario: HorarioAstro,
+  alturas: Alturas,
+  meridiana: Meridiana,
+  polar: Polar,
+  "recta-altura": RectaAltura,
 };
 
 const CLAVE = "nabigatu:v1";

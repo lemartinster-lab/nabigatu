@@ -22,7 +22,7 @@ export const NIVELES: { id: Nivel; nombre: string; corto: string; descripcion: s
     id: "CY",
     nombre: "Capitán de Yate",
     corto: "Capitán de Yate",
-    descripcion: "Ortodrómica y navegación astronómica (próximamente)",
+    descripcion: "Ortodrómica y navegación astronómica, además de todo lo anterior",
   },
 ];
 
@@ -52,9 +52,13 @@ export const MODULOS: Modulo[] = [
   { id: "situacion", titulo: "Situación por demoras", resumen: "Dos demoras, traslado, demora y distancia", nivel: "PY", disponible: true },
   { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
-  { id: "ortodromica", titulo: "Ortodrómica", resumen: "Navegación por círculo máximo", nivel: "CY", disponible: false },
-  { id: "recta-altura", titulo: "Recta de altura", resumen: "Situación por observación de astros", nivel: "CY", disponible: false },
-  { id: "meridiana", titulo: "Meridiana", resumen: "Latitud por la altura del Sol al mediodía", nivel: "CY", disponible: false },
+  { id: "ortodromica", titulo: "Ortodrómica", resumen: "Rumbo inicial, distancia y vértice", nivel: "CY", disponible: true },
+  { id: "horas", titulo: "Horas y fechas", resumen: "HcG, HcL, hora de zona y oficial", nivel: "CY", disponible: true },
+  { id: "horario", titulo: "Horario del astro", resumen: "hG, hL y declinación con el Almanaque", nivel: "CY", disponible: true },
+  { id: "alturas", titulo: "Corrección de alturas", resumen: "De la altura instrumental a la verdadera", nivel: "CY", disponible: true },
+  { id: "meridiana", titulo: "Meridiana", resumen: "Latitud por la altura meridiana y hora del paso", nivel: "CY", disponible: true },
+  { id: "polar", titulo: "Latitud por la Polar", resumen: "Con su altura y horario del lugar", nivel: "CY", disponible: true },
+  { id: "recta-altura", titulo: "Recta de altura", resumen: "ae, Z, Δa y situación por dos rectas", nivel: "CY", disponible: true },
 ];
 
 const ORDEN: Nivel[] = ["PER", "PY", "CY"];
