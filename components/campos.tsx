@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Salida } from "./calculo";
 import { leerFaros, suscribirFaros, type Faro } from "@/lib/faros";
 import { aGradosMinutos } from "@/lib/nucleo/angulos";
+import { separarHemisferio, type TipoCoordenada } from "@/lib/nucleo/coordenadas";
 
 interface CampoProps {
   etiqueta: string;
@@ -87,6 +88,8 @@ export function CampoConSigno({
   negativo = "W",
   placeholder = "4°15'",
   ayuda,
+  tipo,
+  onCambioConSigno,
 }: {
   etiqueta: string;
   valor: string;
@@ -97,7 +100,25 @@ export function CampoConSigno({
   negativo?: string;
   placeholder?: string;
   ayuda?: string;
+  /** Si es una latitud o longitud, la letra escrita (N/S, E/W/O) pone el botón correspondiente. */
+  tipo?: TipoCoordenada;
+  /** Para quien guarda texto y signo juntos: recibe los dos en una sola actualización. */
+  onCambioConSigno?: (v: string, s: 1 | -1) => void;
 }) {
+  const cambiar = (v: string) => {
+    let detectado: 1 | -1 | undefined;
+    if (tipo) {
+      try {
+        detectado = separarHemisferio(v, tipo).signo;
+      } catch {
+        /* letra que no corresponde: el cálculo mostrará el error */
+      }
+    }
+    if (detectado === undefined || detectado === signo) return onChange(v);
+    if (onCambioConSigno) return onCambioConSigno(v, detectado);
+    onChange(v);
+    onSigno(detectado);
+  };
   return (
     <div className="flex flex-col gap-1">
       <span className="text-sm font-medium text-slate-700">{etiqueta}</span>
@@ -105,9 +126,9 @@ export function CampoConSigno({
         <input
           className="w-0 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-lg text-slate-900 outline-none placeholder:text-slate-400 focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20"
           value={valor}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => cambiar(e.target.value)}
           placeholder={placeholder}
-          inputMode="decimal"
+          inputMode={tipo ? "text" : "decimal"}
           autoComplete="off"
           aria-label={etiqueta}
         />
@@ -253,20 +274,24 @@ export function CampoPosicion({
       <div className="grid gap-3 sm:grid-cols-2">
         <CampoConSigno
           etiqueta="Latitud"
+          tipo="lat"
           valor={valor.lat}
           onChange={(lat) => onChange({ ...valor, lat })}
           signo={valor.sLat}
           onSigno={(sLat) => onChange({ ...valor, sLat })}
+          onCambioConSigno={(lat, sLat) => onChange({ ...valor, lat, sLat })}
           positivo="N"
           negativo="S"
           placeholder="36°00,0'"
         />
         <CampoConSigno
           etiqueta="Longitud"
+          tipo="lon"
           valor={valor.lon}
           onChange={(lon) => onChange({ ...valor, lon })}
           signo={valor.sLon}
           onSigno={(sLon) => onChange({ ...valor, sLon })}
+          onCambioConSigno={(lon, sLon) => onChange({ ...valor, lon, sLon })}
           positivo="E"
           negativo="W"
           placeholder="005°10,0'"
