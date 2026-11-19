@@ -80,14 +80,14 @@ function Tope({ tipo }: { tipo: MarcaTope }) {
 }
 
 /** Boya de castillete: marca de tope arriba, cuerpo con sus franjas y agua. */
-function Boya({ m }: { m: Marca }) {
+export function Boya({ m, className = "h-28 w-12" }: { m: Marca; className?: string }) {
   const x = 6;
   const y = 40;
   const w = 28;
   const h = 46;
   const n = m.franjas.length;
   return (
-    <svg viewBox="0 0 40 96" className="h-28 w-12 shrink-0" role="img" aria-label={`Dibujo de la marca ${m.nombre}`}>
+    <svg viewBox="0 0 40 96" className={`${className} shrink-0`} role="img" aria-label={`Dibujo de la marca ${m.nombre}`}>
       <line x1={20} y1={32} x2={20} y2={40} stroke="#374151" strokeWidth={2} />
       <Tope tipo={m.tope} />
       <defs>

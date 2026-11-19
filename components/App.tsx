@@ -19,6 +19,7 @@ import { AtribucionesPnb, TestPnb } from "./pnb/Pnb";
 import { TestTeoria } from "./teoria/TestTeoria";
 import { EscalasMeteo } from "./teoria/Escalas";
 import { ChuletaBalizamiento, ChuletaLuces } from "./teoria/Chuletas";
+import { QueVesDeNoche, ReconoceMarca } from "./teoria/Interactivo";
 import { EXAMENES } from "@/lib/teoria/examenes";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
@@ -58,6 +59,8 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "escalas-meteo": EscalasMeteo,
   "chuleta-balizamiento": ChuletaBalizamiento,
   "chuleta-luces": ChuletaLuces,
+  "que-ves-noche": QueVesDeNoche,
+  "reconoce-marca": ReconoceMarca,
 };
 
 const CLAVE = "nabigatu:v1";
