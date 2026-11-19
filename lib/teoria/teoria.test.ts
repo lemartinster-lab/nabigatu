@@ -50,8 +50,9 @@ describe("estructura oficial (RD 875/2014, anexo II)", () => {
     expect(planExamen(EXAMENES.PER)).toEqual({ preguntas: 31, maxErrores: 8, completo: false });
   });
 
-  it("Patrón de Yate parcial: solo meteorología (10 preguntas), 12·10/40 = 3 errores", () => {
-    expect(planExamen(EXAMENES.PY)).toEqual({ preguntas: 10, maxErrores: 3, completo: false });
+  it("Patrón de Yate parcial: seguridad y meteorología (20 preguntas), 12·20/40 = 6 errores", () => {
+    expect(unidadesDisponibles(EXAMENES.PY).map((u) => u.ut)).toEqual([1, 2]);
+    expect(planExamen(EXAMENES.PY)).toEqual({ preguntas: 20, maxErrores: 6, completo: false });
   });
 });
 
@@ -136,12 +137,14 @@ describe("corrección con los criterios oficiales (PNB)", () => {
   });
 });
 
-describe("corrección parcial (Patrón de Yate, solo meteorología)", () => {
+describe("corrección parcial (Patrón de Yate: seguridad y meteorología)", () => {
   const ex = generarExamen(EXAMENES.PY, 3);
-  it("4 errores de 10 suspenden: el máximo proporcional son 3", () => {
-    const r = ex.map((p, i) => (i < 4 ? (p.correcta + 1) % 4 : p.correcta));
-    const c = corregirExamen(EXAMENES.PY, ex, r);
-    expect(c.maxErrores).toBe(3);
+  const conErrores = (n: number) => ex.map((p, i) => (i % 2 === 0 && i < 2 * n ? (p.correcta + 1) % 4 : p.correcta));
+  it("6 errores repartidos aprueban y 7 suspenden: el máximo proporcional son 6", () => {
+    expect(ex).toHaveLength(20);
+    expect(corregirExamen(EXAMENES.PY, ex, conErrores(6)).aprobado).toBe(true);
+    const c = corregirExamen(EXAMENES.PY, ex, conErrores(7));
+    expect(c.maxErrores).toBe(6);
     expect(c.aprobado).toBe(false);
   });
 });

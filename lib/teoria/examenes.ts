@@ -67,7 +67,7 @@ export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
     maxErrores: 12,
     duracion: "2 horas",
     unidades: [
-      { ut: 1, nombre: "Seguridad en la mar", preguntas: 10, maxErrores: 5, temas: [] },
+      { ut: 1, nombre: "Seguridad en la mar", preguntas: 10, maxErrores: 5, temas: ["seguridad", "seguridad-py"] },
       { ut: 2, nombre: "Meteorología", preguntas: 10, maxErrores: 5, temas: ["meteo-basica", "meteo-py"] },
       { ut: 3, nombre: "Teoría de navegación", preguntas: 10, maxErrores: 5, temas: [] },
       { ut: 4, nombre: "Navegación (carta)", preguntas: 10, maxErrores: 3, temas: [], practicaEn: "Modo examen y las calculadoras del Patrón de Yate" },

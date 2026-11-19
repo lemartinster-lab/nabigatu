@@ -14,7 +14,8 @@ export type Tema =
   | "balizamiento"
   | "reglamento"
   | "meteo-basica"
-  | "meteo-py";
+  | "meteo-py"
+  | "seguridad-py";
 
 export interface Pregunta {
   id: string;

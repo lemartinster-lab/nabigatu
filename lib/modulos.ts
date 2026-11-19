@@ -66,7 +66,7 @@ export const MODULOS: Modulo[] = [
   { id: "corriente", titulo: "Corriente", resumen: "Rumbo y velocidad efectivos", nivel: "PER", disponible: true },
   { id: "conversiones", titulo: "Conversiones", resumen: "Ángulos, cuadrantales y unidades", nivel: "PER", disponible: true },
 
-  { id: "test-py", titulo: "Test del Patrón de Yate", resumen: "Teoría tipo test: de momento, meteorología", nivel: "PY", disponible: true },
+  { id: "test-py", titulo: "Test del Patrón de Yate", resumen: "Teoría tipo test: seguridad en la mar y meteorología", nivel: "PY", disponible: true },
   { id: "mareas", titulo: "Mareas", resumen: "Sonda a una hora y hora para una sonda", nivel: "PY", disponible: true },
   { id: "estima", titulo: "Situación por estima", resumen: "Uno o varios rumbos, con viento y corriente", nivel: "PY", disponible: true },
   { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: true },
