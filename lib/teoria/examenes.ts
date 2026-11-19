@@ -56,7 +56,7 @@ export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
       { ut: 7, nombre: "Maniobra", preguntas: 2, temas: [] },
       { ut: 8, nombre: "Emergencias en la mar", preguntas: 3, temas: [] },
       { ut: 9, nombre: "Meteorología", preguntas: 4, temas: ["meteo-basica"] },
-      { ut: 10, nombre: "Teoría de navegación", preguntas: 5, temas: [] },
+      { ut: 10, nombre: "Teoría de navegación", preguntas: 5, temas: ["navegacion-basica"] },
       { ut: 11, nombre: "Carta de navegación", preguntas: 4, maxErrores: 2, temas: [], practicaEn: "Modo examen y las calculadoras del PER" },
     ],
   },
@@ -69,7 +69,7 @@ export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
     unidades: [
       { ut: 1, nombre: "Seguridad en la mar", preguntas: 10, maxErrores: 5, temas: ["seguridad", "seguridad-py"] },
       { ut: 2, nombre: "Meteorología", preguntas: 10, maxErrores: 5, temas: ["meteo-basica", "meteo-py"] },
-      { ut: 3, nombre: "Teoría de navegación", preguntas: 10, maxErrores: 5, temas: [] },
+      { ut: 3, nombre: "Teoría de navegación", preguntas: 10, maxErrores: 5, temas: ["navegacion-basica", "navegacion-py"] },
       { ut: 4, nombre: "Navegación (carta)", preguntas: 10, maxErrores: 3, temas: [], practicaEn: "Modo examen y las calculadoras del Patrón de Yate" },
     ],
     nota: "Los límites de 5 errores en seguridad y en meteorología solo se aplican si el examen se corrige por módulos.",
