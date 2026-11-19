@@ -54,6 +54,8 @@ export const MODULOS: Modulo[] = [
   { id: "atribuciones-pnb", titulo: "Qué te permite el PNB", resumen: "Barcos, distancia, edad, examen y prácticas, con su artículo", nivel: "PNB", disponible: true },
   { id: "chuleta-balizamiento", titulo: "Chuleta de balizamiento", resumen: "Cada marca dibujada, con su luz y qué indica", nivel: "PNB", disponible: true },
   { id: "chuleta-luces", titulo: "Chuleta de luces y marcas del RIPA", resumen: "Qué muestra cada buque de noche y de día", nivel: "PNB", disponible: true },
+  { id: "que-ves-noche", titulo: "¿Qué ves de noche?", resumen: "Reconoce el buque por sus luces y decide la maniobra", nivel: "PNB", disponible: true },
+  { id: "reconoce-marca", titulo: "Reconoce la marca", resumen: "Boyas de día y su luz parpadeando de noche", nivel: "PNB", disponible: true },
   { id: "test-pnb", titulo: "Test del PNB", resumen: "Examen de prueba de 27 preguntas y práctica por temas", nivel: "PNB", disponible: true },
   { id: "test-per", titulo: "Test del PER", resumen: "Examen de prueba de teoría y práctica por temas", nivel: "PER", disponible: true },
   { id: "escalas-meteo", titulo: "Escalas Beaufort y Douglas", resumen: "Fuerza del viento y estado de la mar, para estudiar", nivel: "PER", disponible: true },
