@@ -4,6 +4,7 @@
  *   para quien los observa, que navega en un buque de propulsión mecánica.
  * - «Reconoce la marca»: ritmo de la luz de cada marca de balizamiento (IALA, región A).
  */
+import { alturaYAzimut } from "../cy/astronomica";
 import { MARCAS, type Marca } from "./chuletas";
 
 // ---------- «¿Qué ves de noche?» ----------
@@ -304,3 +305,34 @@ export function opciones<T>(correcta: T, todas: readonly T[], rnd: () => number)
   ).slice(0, 3);
   return barajar([correcta, ...otras], rnd);
 }
+
+// ---------- Deslizadores: marea y recorrido diario de un astro ----------
+
+
+/**
+ * Altura de la marea por el método del coseno, el mismo de lib/py/mareas.ts:
+ * h = h1 + (h2 − h1) · (1 − cos(180° · t / D)) / 2.
+ */
+export function alturaMarea(h1: number, h2: number, duracionMin: number, tMin: number): number {
+  const t = Math.max(0, Math.min(duracionMin, tMin));
+  return h1 + (h2 - h1) * (1 - Math.cos((Math.PI * t) / duracionMin)) / 2;
+}
+
+export interface PuntoCielo {
+  hL: number;
+  altura: number;
+  azimut: number;
+}
+
+/** Recorrido de un astro a lo largo del día (horario del lugar de 0° a 360°). */
+export function trayectoriaDiurna(lat: number, dec: number, pasoGrados = 5): PuntoCielo[] {
+  const r: PuntoCielo[] = [];
+  for (let hL = 0; hL <= 360; hL += pasoGrados) {
+    const { ae, z } = alturaYAzimut(lat, hL, dec);
+    r.push({ hL, altura: ae, azimut: z });
+  }
+  return r;
+}
+
+/** Altura en el paso por el meridiano superior: 90° − |lat − dec|. */
+export const alturaMeridiana = (lat: number, dec: number) => 90 - Math.abs(lat - dec);
