@@ -44,15 +44,15 @@ describe("estructura oficial (RD 875/2014, anexo II)", () => {
     expect(planExamen(EXAMENES.PNB)).toEqual({ preguntas: 27, maxErrores: 10, completo: true });
   });
 
-  it("PER parcial: UT1–UT6 y meteorología (31 preguntas), errores en proporción: 13·31/45 = 8", () => {
-    expect(unidadesDisponibles(EXAMENES.PER).map((u) => u.ut)).toEqual([1, 2, 3, 4, 5, 6, 9]);
-    expect(unidadesPendientes(EXAMENES.PER).map((u) => u.ut)).toEqual([7, 8, 10, 11]);
-    expect(planExamen(EXAMENES.PER)).toEqual({ preguntas: 31, maxErrores: 8, completo: false });
+  it("PER parcial: UT1–UT6, meteorología y teoría de navegación (36 preguntas), errores en proporción: 13·36/45 = 10", () => {
+    expect(unidadesDisponibles(EXAMENES.PER).map((u) => u.ut)).toEqual([1, 2, 3, 4, 5, 6, 9, 10]);
+    expect(unidadesPendientes(EXAMENES.PER).map((u) => u.ut)).toEqual([7, 8, 11]);
+    expect(planExamen(EXAMENES.PER)).toEqual({ preguntas: 36, maxErrores: 10, completo: false });
   });
 
-  it("Patrón de Yate parcial: seguridad y meteorología (20 preguntas), 12·20/40 = 6 errores", () => {
-    expect(unidadesDisponibles(EXAMENES.PY).map((u) => u.ut)).toEqual([1, 2]);
-    expect(planExamen(EXAMENES.PY)).toEqual({ preguntas: 20, maxErrores: 6, completo: false });
+  it("Patrón de Yate parcial: todo menos la carta (30 preguntas), 12·30/40 = 9 errores", () => {
+    expect(unidadesDisponibles(EXAMENES.PY).map((u) => u.ut)).toEqual([1, 2, 3]);
+    expect(planExamen(EXAMENES.PY)).toEqual({ preguntas: 30, maxErrores: 9, completo: false });
   });
 });
 
@@ -66,7 +66,7 @@ describe("examen de prueba", () => {
 
   it("PER: incluye 4 de meteorología básica", () => {
     const ex = generarExamen(EXAMENES.PER, 5);
-    expect(ex).toHaveLength(31);
+    expect(ex).toHaveLength(36);
     expect(ex.filter((p) => p.ut === 9).every((p) => p.tema === "meteo-basica")).toBe(true);
   });
 
@@ -137,14 +137,27 @@ describe("corrección con los criterios oficiales (PNB)", () => {
   });
 });
 
-describe("corrección parcial (Patrón de Yate: seguridad y meteorología)", () => {
+describe("corrección parcial (Patrón de Yate sin la carta)", () => {
   const ex = generarExamen(EXAMENES.PY, 3);
-  const conErrores = (n: number) => ex.map((p, i) => (i % 2 === 0 && i < 2 * n ? (p.correcta + 1) % 4 : p.correcta));
-  it("6 errores repartidos aprueban y 7 suspenden: el máximo proporcional son 6", () => {
-    expect(ex).toHaveLength(20);
-    expect(corregirExamen(EXAMENES.PY, ex, conErrores(6)).aprobado).toBe(true);
-    const c = corregirExamen(EXAMENES.PY, ex, conErrores(7));
-    expect(c.maxErrores).toBe(6);
+  // 3 errores por unidad (UT1–UT3) = 9; el décimo, en la UT1.
+  const conErrores = (n: number) => {
+    const cuenta: Record<number, number> = {};
+    let total = 0;
+    return ex.map((p) => {
+      const lim = p.ut === 1 && n > 9 ? 4 : 3;
+      if (total < n && (cuenta[p.ut] ?? 0) < lim) {
+        cuenta[p.ut] = (cuenta[p.ut] ?? 0) + 1;
+        total++;
+        return (p.correcta + 1) % 4;
+      }
+      return p.correcta;
+    });
+  };
+  it("9 errores repartidos aprueban y 10 suspenden: el máximo proporcional son 9", () => {
+    expect(ex).toHaveLength(30);
+    expect(corregirExamen(EXAMENES.PY, ex, conErrores(9)).aprobado).toBe(true);
+    const c = corregirExamen(EXAMENES.PY, ex, conErrores(10));
+    expect(c.maxErrores).toBe(9);
     expect(c.aprobado).toBe(false);
   });
 });

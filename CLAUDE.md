@@ -25,7 +25,7 @@ Calculadora de navegación para las titulaciones náuticas de recreo españolas 
 | `lib/nucleo/` | Común: ángulos, coordenadas, vectores, unidades |
 | `lib/ln/`, `lib/per/`, `lib/py/`, `lib/cy/` | Cálculos de cada titulación (funciones puras, con sus `*.test.ts`); `ln` es la licencia de navegación y las motos de agua |
 | `lib/pnb/` | Patrón para Navegación Básica: atribuciones con su artículo y el banco de preguntas de las UT1–UT6 comunes al PNB y al PER (`preguntas.ts`) |
-| `lib/teoria/` | Tests de teoría de todas las titulaciones: estructura oficial de cada examen (`examenes.ts`, anexo II), motor de examen de prueba, práctica y repaso (`motor.ts`), «Mis fallos» (`fallos.ts`, en `localStorage`; sale tras 2 aciertos seguidos), bancos (`banco.ts` los reúne; `meteorologia.ts`, `seguridad-py.ts`…) y escalas Beaufort y Douglas (`escalas.ts`). En cada pregunta la primera opción es la correcta |
+| `lib/teoria/` | Tests de teoría de todas las titulaciones: estructura oficial de cada examen (`examenes.ts`, anexo II), motor de examen de prueba, práctica y repaso (`motor.ts`), «Mis fallos» (`fallos.ts`, en `localStorage`; sale tras 2 aciertos seguidos), bancos (`banco.ts` los reúne; `meteorologia.ts`, `seguridad-py.ts`, `navegacion.ts`…) y escalas Beaufort y Douglas (`escalas.ts`). En cada pregunta la primera opción es la correcta |
 | `lib/examen/generador.ts` | Ejercicios tipo test con distractores basados en errores típicos |
 | `lib/modulos.ts` | Catálogo de módulos por titulación; un nivel incluye los inferiores |
 | `lib/cy/efemerides.ts`, `catalogo-estrellas.ts`, `almanaque.ts` | Almanaque calculado (VSOP87, Aries, 108 estrellas, página del día, fenómenos, incrementos) |
