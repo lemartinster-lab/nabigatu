@@ -1,14 +1,15 @@
 /**
- * «Repasar mis fallos» del PNB: las preguntas falladas se guardan en el navegador y salen
+ * «Mis fallos» de los tests de teoría (todas las titulaciones): las preguntas falladas se guardan en el navegador y salen
  * de la lista cuando se aciertan ACIERTOS_PARA_QUITAR veces seguidas.
  */
-import { PREGUNTAS_PNB } from "./preguntas";
+import { BANCO } from "./banco";
 
 /** Id de pregunta → aciertos seguidos desde el último fallo. */
 export type Fallos = Record<string, number>;
 
 export const ACIERTOS_PARA_QUITAR = 2;
 
+/** Se mantiene el nombre de la primera versión (solo PNB) para no perder las listas ya guardadas. */
 const CLAVE = "nabigatu:pnb-fallos:v1";
 const EVENTO = "nabigatu-pnb-fallos";
 
@@ -31,7 +32,7 @@ export function anotarRespuesta(fallos: Fallos, id: string, acierto: boolean): F
 /** Limpia lo leído del navegador: solo ids que existen en el banco y rachas válidas. */
 export function filtrarFallos(datos: unknown): Fallos {
   if (!datos || typeof datos !== "object" || Array.isArray(datos)) return {};
-  const ids = new Set(PREGUNTAS_PNB.map((p) => p.id));
+  const ids = new Set(BANCO.map((p) => p.id));
   const r: Fallos = {};
   for (const [id, n] of Object.entries(datos as Record<string, unknown>)) {
     if (ids.has(id) && typeof n === "number" && n >= 0 && n < ACIERTOS_PARA_QUITAR) r[id] = Math.floor(n);

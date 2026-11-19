@@ -24,13 +24,14 @@ Calculadora de navegación para las titulaciones náuticas de recreo españolas 
 |------|-----------|
 | `lib/nucleo/` | Común: ángulos, coordenadas, vectores, unidades |
 | `lib/ln/`, `lib/per/`, `lib/py/`, `lib/cy/` | Cálculos de cada titulación (funciones puras, con sus `*.test.ts`); `ln` es la licencia de navegación y las motos de agua |
-| `lib/pnb/` | Patrón para Navegación Básica: atribuciones con su artículo, banco de preguntas de práctica (`preguntas.ts`, la primera opción es la correcta) examen de prueba con la corrección oficial (`examen.ts`, anexo II 2.B) y «Mis fallos» (`fallos.ts`, en `localStorage`; sale tras 2 aciertos seguidos) |
+| `lib/pnb/` | Patrón para Navegación Básica: atribuciones con su artículo y el banco de preguntas de las UT1–UT6 comunes al PNB y al PER (`preguntas.ts`) |
+| `lib/teoria/` | Tests de teoría de todas las titulaciones: estructura oficial de cada examen (`examenes.ts`, anexo II), motor de examen de prueba, práctica y repaso (`motor.ts`), «Mis fallos» (`fallos.ts`, en `localStorage`; sale tras 2 aciertos seguidos), bancos (`banco.ts` los reúne; `meteorologia.ts`…) y escalas Beaufort y Douglas (`escalas.ts`). En cada pregunta la primera opción es la correcta |
 | `lib/examen/generador.ts` | Ejercicios tipo test con distractores basados en errores típicos |
 | `lib/modulos.ts` | Catálogo de módulos por titulación; un nivel incluye los inferiores |
 | `lib/cy/efemerides.ts`, `catalogo-estrellas.ts`, `almanaque.ts` | Almanaque calculado (VSOP87, Aries, 108 estrellas, página del día, fenómenos, incrementos) |
 | `lib/faros.ts` | «Mis faros», guardados en `localStorage` |
 | `components/App.tsx` | Navegación; el mapa `COMPONENTES` asocia cada id de módulo a su formulario |
-| `components/ln/`, `pnb/`, `per/`, `py/`, `cy/`, `examen/` | Formularios de cada módulo |
+| `components/ln/`, `pnb/`, `teoria/`, `per/`, `py/`, `cy/`, `examen/` | Formularios de cada módulo |
 | `components/campos.tsx`, `calculo.ts` | Campos reutilizables y el patrón de cálculo de los formularios |
 
 ## Convenciones
@@ -47,7 +48,8 @@ Calculadora de navegación para las titulaciones náuticas de recreo españolas 
 - Los cálculos se validan con **ejercicios de exámenes oficiales** (Junta de Andalucía, Euskadi…) y, en astronomía, con el Almanaque Náutico 2026 y la hoja 2027 de nauticalalmanac.it. Cuando añadas o cambies un cálculo, añade un test con un caso real y su fuente en el nombre del test.
 - No relajes la tolerancia de un test para que pase: si un valor oficial no cuadra, investiga.
 - La astronomía con almanaque es del **Capitán de Yate**; el Patrón de Yate se queda en mareas, estima, loxodrómica, situación y horas.
-- Las preguntas del PNB son de práctica, redactadas para Nabigatu: no copies preguntas de exámenes oficiales ni de academias. Cada una lleva su explicación, y las de legislación deben poder comprobarse en el BOE.
+- **Nuevo banco de preguntas:** añade su `Tema` en `lib/teoria/tipos.ts`, el archivo del banco en `lib/teoria/`, inclúyelo en `banco.ts` y pon el tema en la unidad que corresponda de `examenes.ts`. Cada unidad necesita al menos el doble de preguntas que el examen (lo comprueba un test).
+- Las preguntas de teoría son de práctica, redactadas para Nabigatu: no copies preguntas de exámenes oficiales ni de academias. Cada una lleva su explicación, y las de legislación deben poder comprobarse en el BOE.
 - Las normas de la licencia de navegación y de las motos de agua (`lib/ln/moto.ts`) citan su artículo del BOE (RD 875/2014 y RD 259/2002) y la fecha de revisión en `NORMAS_REVISADAS`: si cambias una norma, compruébala en el texto consolidado y actualiza esa fecha.
 
 ## Límites

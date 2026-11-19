@@ -1,31 +1,14 @@
 /**
- * Banco de preguntas de práctica para el examen del PNB.
+ * Banco de preguntas de práctica de las unidades comunes al PNB y al PER (UT1–UT6).
  *
  * Redactadas para Nabigatu sobre el temario del anexo II del RD 875/2014 (no son
  * preguntas oficiales). La primera opción de cada pregunta es la correcta; el test
  * las baraja antes de mostrarlas.
  */
 
-export type UnidadPnb = "nomenclatura" | "amarre" | "seguridad" | "legislacion" | "balizamiento" | "reglamento";
+import { p, type Pregunta } from "../teoria/tipos";
 
-export interface PreguntaPnb {
-  id: string;
-  unidad: UnidadPnb;
-  enunciado: string;
-  /** Cuatro respuestas; la primera es la correcta. */
-  opciones: [string, string, string, string];
-  explicacion: string;
-}
-
-const p = (
-  id: string,
-  unidad: UnidadPnb,
-  enunciado: string,
-  opciones: [string, string, string, string],
-  explicacion: string,
-): PreguntaPnb => ({ id, unidad, enunciado, opciones, explicacion });
-
-export const PREGUNTAS_PNB: PreguntaPnb[] = [
+export const PREGUNTAS_PNB: Pregunta[] = [
   // UT1 · Nomenclatura náutica
   p("nom-babor", "nomenclatura", "Mirando hacia proa, el costado izquierdo del barco se llama…", ["Babor", "Estribor", "Aleta", "Amura"], "Babor es el costado izquierdo mirando a proa; estribor, el derecho."),
   p("nom-eslora", "nomenclatura", "La eslora es…", ["La longitud del barco de proa a popa", "La anchura máxima del barco", "La parte sumergida del casco", "La altura del palo"], "Eslora es la longitud; manga, la anchura; calado, lo que se hunde el casco."),
