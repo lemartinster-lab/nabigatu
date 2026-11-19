@@ -16,6 +16,9 @@ import { AlmanaqueCalculado } from "./cy/AlmanaqueCalculado";
 import { MisFaros } from "./MisFaros";
 import { AlcanceLicencia, Autonomia, HorasDeLuz, NormasMoto } from "./ln/Moto";
 import { AtribucionesPnb, TestPnb } from "./pnb/Pnb";
+import { TestTeoria } from "./teoria/TestTeoria";
+import { EscalasMeteo } from "./teoria/Escalas";
+import { EXAMENES } from "@/lib/teoria/examenes";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   examen: ModoExamen,
@@ -48,6 +51,9 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "normas-moto": NormasMoto,
   "atribuciones-pnb": AtribucionesPnb,
   "test-pnb": TestPnb,
+  "test-per": () => <TestTeoria def={EXAMENES.PER} />,
+  "test-py": () => <TestTeoria def={EXAMENES.PY} />,
+  "escalas-meteo": EscalasMeteo,
 };
 
 const CLAVE = "nabigatu:v1";
