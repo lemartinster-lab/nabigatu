@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BANCO, preguntasDeTemas } from "./banco";
 import { BEAUFORT, DOUGLAS, gradoBeaufort } from "./escalas";
+import { CENTELLEOS_CARDINAL, LUCES_RIPA, MARCAS } from "./chuletas";
 import { EXAMENES } from "./examenes";
 import { ACIERTOS_PARA_QUITAR, anotarRespuesta, filtrarFallos } from "./fallos";
 import {
@@ -44,10 +45,10 @@ describe("estructura oficial (RD 875/2014, anexo II)", () => {
     expect(planExamen(EXAMENES.PNB)).toEqual({ preguntas: 27, maxErrores: 10, completo: true });
   });
 
-  it("PER parcial: UT1–UT6, meteorología y teoría de navegación (36 preguntas), errores en proporción: 13·36/45 = 10", () => {
-    expect(unidadesDisponibles(EXAMENES.PER).map((u) => u.ut)).toEqual([1, 2, 3, 4, 5, 6, 9, 10]);
-    expect(unidadesPendientes(EXAMENES.PER).map((u) => u.ut)).toEqual([7, 8, 11]);
-    expect(planExamen(EXAMENES.PER)).toEqual({ preguntas: 36, maxErrores: 10, completo: false });
+  it("PER: toda la teoría menos la carta (41 preguntas), errores en proporción: 13·41/45 = 11", () => {
+    expect(unidadesDisponibles(EXAMENES.PER).map((u) => u.ut)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(unidadesPendientes(EXAMENES.PER).map((u) => u.ut)).toEqual([11]);
+    expect(planExamen(EXAMENES.PER)).toEqual({ preguntas: 41, maxErrores: 11, completo: false });
   });
 
   it("Patrón de Yate parcial: todo menos la carta (30 preguntas), 12·30/40 = 9 errores", () => {
@@ -66,7 +67,7 @@ describe("examen de prueba", () => {
 
   it("PER: incluye 4 de meteorología básica", () => {
     const ex = generarExamen(EXAMENES.PER, 5);
-    expect(ex).toHaveLength(36);
+    expect(ex).toHaveLength(41);
     expect(ex.filter((p) => p.ut === 9).every((p) => p.tema === "meteo-basica")).toBe(true);
   });
 
@@ -202,5 +203,30 @@ describe("escalas Beaufort y Douglas", () => {
     expect(gradoBeaufort(70).fuerza).toBe(12);
     expect(DOUGLAS[3]).toMatchObject({ nombre: "Marejada", metros: [0.5, 1.25] });
     expect(DOUGLAS[5]).toMatchObject({ nombre: "Gruesa", metros: [2.5, 4] });
+  });
+});
+
+describe("chuletas de balizamiento y luces", () => {
+  it("las cardinales: conos y colores coherentes (los conos apuntan al negro)", () => {
+    const m = Object.fromEntries(MARCAS.map((x) => [x.id, x]));
+    expect(m.norte).toMatchObject({ franjas: ["negro", "amarillo"], tope: "conos-arriba" });
+    expect(m.sur).toMatchObject({ franjas: ["amarillo", "negro"], tope: "conos-abajo" });
+    expect(m.este).toMatchObject({ franjas: ["negro", "amarillo", "negro"], tope: "conos-base" });
+    expect(m.oeste).toMatchObject({ franjas: ["amarillo", "negro", "amarillo"], tope: "conos-vertice" });
+    expect(CENTELLEOS_CARDINAL).toEqual({ norte: "continuo", este: 3, sur: 6, oeste: 9 });
+  });
+
+  it("región A: babor rojo con cilindro y estribor verde con cono", () => {
+    expect(MARCAS.find((x) => x.id === "babor")).toMatchObject({ franjas: ["rojo"], tope: "cilindro-rojo" });
+    expect(MARCAS.find((x) => x.id === "estribor")).toMatchObject({ franjas: ["verde"], tope: "cono-verde" });
+  });
+
+  it("luces del RIPA de los casos que más se preguntan", () => {
+    const l = Object.fromEntries(LUCES_RIPA.map((x) => [x.id, x]));
+    expect(l["sin-gobierno"]).toMatchObject({ todoHorizonte: ["roja", "roja"], dia: ["bola", "bola"] });
+    expect(l.restringido).toMatchObject({ todoHorizonte: ["roja", "blanca", "roja"], dia: ["bola", "bicono", "bola"] });
+    expect(l.arrastre.todoHorizonte).toEqual(["verde", "blanca"]);
+    expect(l.practico.todoHorizonte).toEqual(["blanca", "roja"]);
+    expect(l.fondeado).toMatchObject({ todoHorizonte: ["blanca"], dia: ["bola"] });
   });
 });

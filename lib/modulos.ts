@@ -52,6 +52,8 @@ export const MODULOS: Modulo[] = [
   { id: "autonomia", titulo: "Combustible y autonomía", resumen: "Regla del tercio", nivel: "LN", disponible: true },
   { id: "normas-moto", titulo: "Normas para motos de agua", resumen: "Lo esencial, con su artículo del BOE", nivel: "LN", disponible: true },
   { id: "atribuciones-pnb", titulo: "Qué te permite el PNB", resumen: "Barcos, distancia, edad, examen y prácticas, con su artículo", nivel: "PNB", disponible: true },
+  { id: "chuleta-balizamiento", titulo: "Chuleta de balizamiento", resumen: "Cada marca dibujada, con su luz y qué indica", nivel: "PNB", disponible: true },
+  { id: "chuleta-luces", titulo: "Chuleta de luces y marcas del RIPA", resumen: "Qué muestra cada buque de noche y de día", nivel: "PNB", disponible: true },
   { id: "test-pnb", titulo: "Test del PNB", resumen: "Examen de prueba de 27 preguntas y práctica por temas", nivel: "PNB", disponible: true },
   { id: "test-per", titulo: "Test del PER", resumen: "Examen de prueba de teoría y práctica por temas", nivel: "PER", disponible: true },
   { id: "escalas-meteo", titulo: "Escalas Beaufort y Douglas", resumen: "Fuerza del viento y estado de la mar, para estudiar", nivel: "PER", disponible: true },
