@@ -54,6 +54,7 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "test-pnb": TestPnb,
   "test-per": () => <TestTeoria def={EXAMENES.PER} />,
   "test-py": () => <TestTeoria def={EXAMENES.PY} />,
+  "test-cy": () => <TestTeoria def={EXAMENES.CY} />,
   "escalas-meteo": EscalasMeteo,
   "chuleta-balizamiento": ChuletaBalizamiento,
   "chuleta-luces": ChuletaLuces,

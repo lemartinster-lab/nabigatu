@@ -39,6 +39,7 @@ describe("estructura oficial (RD 875/2014, anexo II)", () => {
     expect(EXAMENES.PNB.unidades.reduce((s, u) => s + u.preguntas, 0)).toBe(27);
     expect(EXAMENES.PER.unidades.reduce((s, u) => s + u.preguntas, 0)).toBe(45);
     expect(EXAMENES.PY.unidades.reduce((s, u) => s + u.preguntas, 0)).toBe(40);
+    expect(EXAMENES.CY.unidades.reduce((s, u) => s + u.preguntas, 0)).toBe(40);
   });
 
   it("PNB completo: 27 preguntas y 10 errores", () => {
@@ -54,6 +55,15 @@ describe("estructura oficial (RD 875/2014, anexo II)", () => {
   it("Patrón de Yate parcial: todo menos la carta (30 preguntas), 12·30/40 = 9 errores", () => {
     expect(unidadesDisponibles(EXAMENES.PY).map((u) => u.ut)).toEqual([1, 2, 3]);
     expect(planExamen(EXAMENES.PY)).toEqual({ preguntas: 30, maxErrores: 9, completo: false });
+  });
+});
+
+describe("Capitán de Yate", () => {
+  it("toda la teoría menos el cálculo (30 preguntas), 12·30/40 = 9 errores", () => {
+    expect(unidadesDisponibles(EXAMENES.CY).map((u) => u.ut)).toEqual([1, 3, 4]);
+    expect(planExamen(EXAMENES.CY)).toEqual({ preguntas: 30, maxErrores: 9, completo: false });
+    const ex = generarExamen(EXAMENES.CY, 11);
+    expect(ex.filter((p) => p.ut === 4).every((p) => p.tema === "ingles")).toBe(true);
   });
 });
 
