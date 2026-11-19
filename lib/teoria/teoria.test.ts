@@ -25,10 +25,11 @@ describe("banco de preguntas", () => {
     }
   });
 
-  it("cada unidad con temas tiene al menos el doble de preguntas que el examen, para que los exámenes varíen", () => {
+  it("cada unidad tiene al menos el triple de preguntas que el examen (el doble en las de 10), para que los exámenes varíen", () => {
     for (const def of Object.values(EXAMENES)) {
       for (const u of def.unidades.filter((x) => x.temas.length > 0)) {
-        expect(preguntasDeTemas(u.temas).length, `${def.nivel} UT${u.ut}`).toBeGreaterThanOrEqual(u.preguntas * 2);
+        const factor = u.preguntas >= 10 ? 2 : 3;
+        expect(preguntasDeTemas(u.temas).length, `${def.nivel} UT${u.ut}`).toBeGreaterThanOrEqual(u.preguntas * factor);
       }
     }
   });

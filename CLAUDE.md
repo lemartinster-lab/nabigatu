@@ -48,7 +48,7 @@ Calculadora de navegación para las titulaciones náuticas de recreo españolas 
 - Los cálculos se validan con **ejercicios de exámenes oficiales** (Junta de Andalucía, Euskadi…) y, en astronomía, con el Almanaque Náutico 2026 y la hoja 2027 de nauticalalmanac.it. Cuando añadas o cambies un cálculo, añade un test con un caso real y su fuente en el nombre del test.
 - No relajes la tolerancia de un test para que pase: si un valor oficial no cuadra, investiga.
 - La astronomía con almanaque es del **Capitán de Yate**; el Patrón de Yate se queda en mareas, estima, loxodrómica, situación y horas.
-- **Nuevo banco de preguntas:** añade su `Tema` en `lib/teoria/tipos.ts`, el archivo del banco en `lib/teoria/`, inclúyelo en `banco.ts` y pon el tema en la unidad que corresponda de `examenes.ts`. Cada unidad necesita al menos el doble de preguntas que el examen (lo comprueba un test).
+- **Nuevo banco de preguntas:** añade su `Tema` en `lib/teoria/tipos.ts`, el archivo del banco en `lib/teoria/`, inclúyelo en `banco.ts` y pon el tema en la unidad que corresponda de `examenes.ts`. Cada unidad necesita al menos el triple de preguntas que el examen, o el doble en las unidades de 10 preguntas (lo comprueba un test).
 - Las preguntas de teoría son de práctica, redactadas para Nabigatu: no copies preguntas de exámenes oficiales ni de academias. Cada una lleva su explicación, y las de legislación deben poder comprobarse en el BOE.
 - Las normas de la licencia de navegación y de las motos de agua (`lib/ln/moto.ts`) citan su artículo del BOE (RD 875/2014 y RD 259/2002) y la fecha de revisión en `NORMAS_REVISADAS`: si cambias una norma, compruébala en el texto consolidado y actualiza esa fecha.
 
