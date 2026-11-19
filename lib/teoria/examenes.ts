@@ -53,8 +53,8 @@ export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
     duracion: "1 h 30 min",
     unidades: [
       ...COMUNES,
-      { ut: 7, nombre: "Maniobra", preguntas: 2, temas: [] },
-      { ut: 8, nombre: "Emergencias en la mar", preguntas: 3, temas: [] },
+      { ut: 7, nombre: "Maniobra", preguntas: 2, temas: ["maniobra"] },
+      { ut: 8, nombre: "Emergencias en la mar", preguntas: 3, temas: ["emergencias"] },
       { ut: 9, nombre: "Meteorología", preguntas: 4, temas: ["meteo-basica"] },
       { ut: 10, nombre: "Teoría de navegación", preguntas: 5, temas: ["navegacion-basica"] },
       { ut: 11, nombre: "Carta de navegación", preguntas: 4, maxErrores: 2, temas: [], practicaEn: "Modo examen y las calculadoras del PER" },

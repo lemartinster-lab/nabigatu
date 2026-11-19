@@ -18,6 +18,7 @@ import { AlcanceLicencia, Autonomia, HorasDeLuz, NormasMoto } from "./ln/Moto";
 import { AtribucionesPnb, TestPnb } from "./pnb/Pnb";
 import { TestTeoria } from "./teoria/TestTeoria";
 import { EscalasMeteo } from "./teoria/Escalas";
+import { ChuletaBalizamiento, ChuletaLuces } from "./teoria/Chuletas";
 import { EXAMENES } from "@/lib/teoria/examenes";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
@@ -54,6 +55,8 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "test-per": () => <TestTeoria def={EXAMENES.PER} />,
   "test-py": () => <TestTeoria def={EXAMENES.PY} />,
   "escalas-meteo": EscalasMeteo,
+  "chuleta-balizamiento": ChuletaBalizamiento,
+  "chuleta-luces": ChuletaLuces,
 };
 
 const CLAVE = "nabigatu:v1";
