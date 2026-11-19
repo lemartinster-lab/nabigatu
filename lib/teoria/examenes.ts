@@ -36,7 +36,7 @@ const COMUNES: UnidadOficial[] = [
   { ut: 6, nombre: "Reglamento (RIPA)", preguntas: 10, maxErrores: 5, temas: ["reglamento"] },
 ];
 
-export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
+export const EXAMENES: Record<"PNB" | "PER" | "PY" | "CY", DefinicionExamen> = {
   PNB: {
     nivel: "PNB",
     nombre: "Patrón para Navegación Básica",
@@ -73,5 +73,19 @@ export const EXAMENES: Record<"PNB" | "PER" | "PY", DefinicionExamen> = {
       { ut: 4, nombre: "Navegación (carta)", preguntas: 10, maxErrores: 3, temas: [], practicaEn: "Modo examen y las calculadoras del Patrón de Yate" },
     ],
     nota: "Los límites de 5 errores en seguridad y en meteorología solo se aplican si el examen se corrige por módulos.",
+  },
+  CY: {
+    nivel: "CY",
+    nombre: "Capitán de Yate",
+    totalPreguntas: 40,
+    maxErrores: 12,
+    duracion: "2 h 30 min",
+    unidades: [
+      { ut: 1, nombre: "Teoría de navegación", preguntas: 10, maxErrores: 5, temas: ["navegacion-cy"] },
+      { ut: 2, nombre: "Cálculo de navegación", preguntas: 10, maxErrores: 4, temas: [], practicaEn: "las calculadoras astronómicas y la ortodrómica" },
+      { ut: 3, nombre: "Meteorología", preguntas: 10, maxErrores: 5, temas: ["meteo-cy"] },
+      { ut: 4, nombre: "Inglés", preguntas: 10, maxErrores: 5, temas: ["ingles"] },
+    ],
+    nota: "Los límites de 5 errores en meteorología y en inglés solo se aplican si el examen se corrige por módulos.",
   },
 };

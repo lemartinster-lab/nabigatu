@@ -76,6 +76,7 @@ export const MODULOS: Modulo[] = [
   { id: "faros", titulo: "Mis faros", resumen: "Faros de tu carta para elegirlos con un toque", nivel: "PER", disponible: true },
   { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
+  { id: "test-cy", titulo: "Test del Capitán de Yate", resumen: "Teoría tipo test: esfera celeste, meteorología e inglés", nivel: "CY", disponible: true },
   { id: "ortodromica", titulo: "Ortodrómica", resumen: "Rumbo inicial, distancia y vértice", nivel: "CY", disponible: true },
   { id: "horas", titulo: "Horas y fechas", resumen: "HcG, HcL, hora de zona y oficial", nivel: "CY", disponible: true },
   { id: "almanaque", titulo: "Almanaque calculado", resumen: "hG y declinación del Sol y las estrellas sin Almanaque", nivel: "CY", disponible: true },
