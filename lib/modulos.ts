@@ -58,6 +58,8 @@ export const MODULOS: Modulo[] = [
   { id: "reconoce-marca", titulo: "Reconoce la marca", resumen: "Boyas de día y su luz parpadeando de noche", nivel: "PNB", disponible: true },
   { id: "test-pnb", titulo: "Test del PNB", resumen: "Examen de prueba de 27 preguntas y práctica por temas", nivel: "PNB", disponible: true },
   { id: "test-per", titulo: "Test del PER", resumen: "Examen de prueba de teoría y práctica por temas", nivel: "PER", disponible: true },
+  { id: "triangulo-velocidades", titulo: "Triángulo de viento y corriente", resumen: "Mueve viento y corriente y mira el rumbo efectivo", nivel: "PER", disponible: true },
+  { id: "aguja-ct", titulo: "Aguja y corrección total", resumen: "Los tres nortes y el rumbo, con deslizadores", nivel: "PER", disponible: true },
   { id: "escalas-meteo", titulo: "Escalas Beaufort y Douglas", resumen: "Fuerza del viento y estado de la mar, para estudiar", nivel: "PER", disponible: true },
   { id: "examen", titulo: "Modo examen", resumen: "Ejercicios tipo test con la solución", nivel: "PER", disponible: true },
   { id: "rumbo-a-dar", titulo: "Rumbo a dar al timonel", resumen: "Problema completo: corriente, viento y aguja", nivel: "PER", disponible: true },
@@ -71,6 +73,7 @@ export const MODULOS: Modulo[] = [
   { id: "conversiones", titulo: "Conversiones", resumen: "Ángulos, cuadrantales y unidades", nivel: "PER", disponible: true },
 
   { id: "test-py", titulo: "Test del Patrón de Yate", resumen: "Teoría tipo test: seguridad, meteorología y teoría de navegación", nivel: "PY", disponible: true },
+  { id: "curva-marea", titulo: "Curva de la marea", resumen: "Mueve la hora y mira la altura y la sonda real", nivel: "PY", disponible: true },
   { id: "mareas", titulo: "Mareas", resumen: "Sonda a una hora y hora para una sonda", nivel: "PY", disponible: true },
   { id: "estima", titulo: "Situación por estima", resumen: "Uno o varios rumbos, con viento y corriente", nivel: "PY", disponible: true },
   { id: "loxodromica", titulo: "Loxodrómica", resumen: "Rumbo y distancia entre dos posiciones", nivel: "PY", disponible: true },
@@ -79,6 +82,7 @@ export const MODULOS: Modulo[] = [
   { id: "llegada", titulo: "Llegar a una hora", resumen: "Rumbo y velocidad para estar a la hora fijada", nivel: "PY", disponible: true },
 
   { id: "test-cy", titulo: "Test del Capitán de Yate", resumen: "Teoría tipo test: esfera celeste, meteorología e inglés", nivel: "CY", disponible: true },
+  { id: "esfera-celeste", titulo: "Esfera celeste", resumen: "Altura, azimut y recorrido diario del astro", nivel: "CY", disponible: true },
   { id: "ortodromica", titulo: "Ortodrómica", resumen: "Rumbo inicial, distancia y vértice", nivel: "CY", disponible: true },
   { id: "horas", titulo: "Horas y fechas", resumen: "HcG, HcL, hora de zona y oficial", nivel: "CY", disponible: true },
   { id: "almanaque", titulo: "Almanaque calculado", resumen: "hG y declinación del Sol y las estrellas sin Almanaque", nivel: "CY", disponible: true },

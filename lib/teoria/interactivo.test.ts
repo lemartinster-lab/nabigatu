@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARCAS } from "./chuletas";
-import { aleatorio, duracion, encendidos, ESCENARIOS, opciones, RITMOS } from "./interactivo";
+import { aleatorio, alturaMarea, alturaMeridiana, duracion, encendidos, ESCENARIOS, opciones, RITMOS, trayectoriaDiurna } from "./interactivo";
+import { sondaAHora } from "../py/mareas";
 
 describe("«¿Qué ves de noche?»", () => {
   it("cada escenario tiene luces dentro del dibujo y una explicación con su regla", () => {
@@ -66,5 +67,32 @@ describe("opciones", () => {
     expect(o).toHaveLength(4);
     expect(new Set(o).size).toBe(4);
     expect(o).toContain("b");
+  });
+});
+
+describe("deslizadores", () => {
+  it("la curva de la marea coincide con el cálculo de Mareas (método del coseno)", () => {
+    const extremos = [
+      { minutos: 360, altura: 0.6 },
+      { minutos: 360 + 375, altura: 2.9 },
+    ];
+    const r = sondaAHora(extremos, 360 + 150, 0, 4);
+    expect(alturaMarea(0.6, 2.9, 375, 150)).toBeCloseTo(r.altura, 6);
+    expect(alturaMarea(0.6, 2.9, 375, 0)).toBeCloseTo(0.6, 6);
+    expect(alturaMarea(0.6, 2.9, 375, 375)).toBeCloseTo(2.9, 6);
+  });
+
+  it("la mayor altura del recorrido diario es la de la meridiana: 90° − |lat − dec|", () => {
+    const t = trayectoriaDiurna(28.5, 20, 1);
+    const max = Math.max(...t.map((p) => p.altura));
+    expect(max).toBeCloseTo(alturaMeridiana(28.5, 20), 6);
+    expect(t[0].hL).toBe(0);
+    expect(t[0].altura).toBeCloseTo(81.5, 6);
+  });
+
+  it("en el ecuador, un astro de declinación 0 sale por el este y se pone por el oeste", () => {
+    const t = trayectoriaDiurna(0, 0, 90);
+    expect(t.find((p) => p.hL === 90)!.azimut).toBeCloseTo(270, 6);
+    expect(t.find((p) => p.hL === 270)!.azimut).toBeCloseTo(90, 6);
   });
 });

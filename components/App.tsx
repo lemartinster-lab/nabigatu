@@ -20,6 +20,7 @@ import { TestTeoria } from "./teoria/TestTeoria";
 import { EscalasMeteo } from "./teoria/Escalas";
 import { ChuletaBalizamiento, ChuletaLuces } from "./teoria/Chuletas";
 import { QueVesDeNoche, ReconoceMarca } from "./teoria/Interactivo";
+import { AgujaCorreccion, CurvaMarea, EsferaCeleste, TrianguloVelocidades } from "./teoria/Deslizadores";
 import { EXAMENES } from "@/lib/teoria/examenes";
 
 const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
@@ -61,6 +62,10 @@ const COMPONENTES: Record<string, ComponentType<{ nivel: Nivel }>> = {
   "chuleta-luces": ChuletaLuces,
   "que-ves-noche": QueVesDeNoche,
   "reconoce-marca": ReconoceMarca,
+  "triangulo-velocidades": TrianguloVelocidades,
+  "aguja-ct": AgujaCorreccion,
+  "curva-marea": CurvaMarea,
+  "esfera-celeste": EsferaCeleste,
 };
 
 const CLAVE = "nabigatu:v1";
